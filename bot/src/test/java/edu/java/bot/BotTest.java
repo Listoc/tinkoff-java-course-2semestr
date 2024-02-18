@@ -8,11 +8,12 @@ import edu.java.bot.command.StartCommand;
 import edu.java.bot.repository.InMemoryRepository;
 import edu.java.bot.telegram.MyTelegramBot;
 import edu.java.bot.telegram.UserMessageProcessorImpl;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
 
 public class BotTest {
     private static final Update mock;

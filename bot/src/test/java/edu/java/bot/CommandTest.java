@@ -10,7 +10,7 @@ import edu.java.bot.command.TrackCommand;
 import edu.java.bot.command.UntrackCommand;
 import edu.java.bot.model.User;
 import edu.java.bot.repository.InMemoryRepository;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.mock;
 import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
