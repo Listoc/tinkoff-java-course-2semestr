@@ -22,18 +22,21 @@ public class ListCommand extends AbstractCommand implements Command {
     @Override
     public SendMessage handle(@NotNull Update update) {
         StringBuilder text;
-        var result = repository.getLinksByUser(new User(update.message().from().id()));
 
-        if (result == null) {
+        if (!repository.isUserRegistered(new User(update.message().from().id()))) {
             text = new StringBuilder("You need to register first. Try `/start` command.");
-        } else if (result.isEmpty()) {
-            text = new StringBuilder(
-                "You don't have any tracked links. Try to add one by using `/track` command followed by link."
-            );
         } else {
-            text = new StringBuilder("Links you are tracking:\n");
-            for (var link : result) {
-                text.append('`').append(link).append('`').append('\n');
+            var result = repository.getLinksByUser(new User(update.message().from().id()));
+
+            if (result.isEmpty()) {
+                text = new StringBuilder(
+                    "You don't have any tracked links. Try to add one by using `/track` command followed by link."
+                );
+            } else {
+                text = new StringBuilder("Links you are tracking:\n");
+                for (var link : result) {
+                    text.append('`').append(link).append('`').append('\n');
+                }
             }
         }
 
