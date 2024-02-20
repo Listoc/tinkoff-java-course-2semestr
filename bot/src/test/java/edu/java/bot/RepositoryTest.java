@@ -4,7 +4,9 @@ import edu.java.bot.model.User;
 import edu.java.bot.repository.InMemoryRepository;
 import org.junit.jupiter.api.Test;
 import java.util.List;
+import java.util.NoSuchElementException;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class RepositoryTest {
     @Test
@@ -24,7 +26,7 @@ public class RepositoryTest {
     public void getLinksByUserWithoutUser() {
         var repository = new InMemoryRepository();
 
-        assertThat(repository.getLinksByUser(new User(5L))).isNull();
+        assertThatThrownBy(() -> repository.getLinksByUser(new User(5L))).isInstanceOf(NoSuchElementException.class);
     }
 
     @Test
@@ -78,5 +80,21 @@ public class RepositoryTest {
 
         assertThat(repository.deleteLinkByUser(user, "test")).isTrue();
         assertThat(repository.getLinksByUser(user)).isEmpty();
+    }
+
+    @Test
+    public void isUserPresentedTestWithoutUser() {
+        var repository = new InMemoryRepository();
+
+        assertThat(repository.isUserRegistered(new User(5L))).isFalse();
+    }
+
+    @Test
+    public void isUserPresentedTestWithUser() {
+        var repository = new InMemoryRepository();
+        var user = new User(5L);
+        repository.addUser(user);
+
+        assertThat(repository.isUserRegistered(user)).isTrue();
     }
 }
