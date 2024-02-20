@@ -10,17 +10,13 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class HelpCommand extends AbstractCommand implements Command {
-    private List<Command> commands;
-
-    public HelpCommand() {
-        super("/help", "get other commands info");
-    }
+    private final List<Command> commands;
 
     @Autowired
-    public void setCommands(@NotNull List<Command> commands) {
+    public HelpCommand(@NotNull List<Command> commands) {
+        super("/help", "get other commands info");
         this.commands = commands;
     }
-
 
     @Override
     public SendMessage handle(@NotNull Update update) {

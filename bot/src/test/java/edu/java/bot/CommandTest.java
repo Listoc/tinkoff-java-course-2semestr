@@ -32,8 +32,7 @@ public class CommandTest {
     @Test
     public void helpTest() {
         var repository = new InMemoryRepository();
-        var help = new HelpCommand();
-        help.setCommands(List.of(new ListCommand(repository)));
+        var help = new HelpCommand(List.of(new ListCommand(repository)));
 
         var expectedText = "Bot supports next commands:\n`/list` — get all tracked links\n";
 
