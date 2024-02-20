@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -19,8 +20,8 @@ public class InMemoryRepository implements Repository {
 
     @Override
     public List<String> getLinksByUser(User user) {
-        if (!links.containsKey(user.id())) {
-            return null;
+        if (!isUserRegistered(user)) {
+            throw new NoSuchElementException("No such user.");
         }
 
         return links.getOrDefault(user.id(), EMPTY_LIST);
@@ -28,7 +29,7 @@ public class InMemoryRepository implements Repository {
 
     @Override
     public boolean addLinkToUser(User user, String link) {
-        if (!links.containsKey(user.id())) {
+        if (!isUserRegistered(user)) {
             return false;
         }
 
@@ -37,7 +38,7 @@ public class InMemoryRepository implements Repository {
 
     @Override
     public boolean addUser(User user) {
-        if (links.containsKey(user.id())) {
+        if (isUserRegistered(user)) {
             return false;
         }
 
@@ -48,12 +49,17 @@ public class InMemoryRepository implements Repository {
 
     @Override
     public boolean deleteLinkByUser(User user, String link) {
-        if (!links.containsKey(user.id())) {
+        if (!isUserRegistered(user)) {
             return false;
         }
 
         links.get(user.id()).remove(link);
 
         return true;
+    }
+
+    @Override
+    public boolean isUserRegistered(User user) {
+        return links.containsKey(user.id());
     }
 }

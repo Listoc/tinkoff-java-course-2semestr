@@ -11,4 +11,6 @@ public interface Repository {
     boolean addUser(User user);
 
     boolean deleteLinkByUser(User user, String link);
+
+    boolean isUserRegistered(User user);
 }
