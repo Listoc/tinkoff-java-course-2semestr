@@ -1,0 +1,13 @@
+{
+    "request": {
+        "method": "GET",
+        "url": "/questions/65397363?site=stackoverflow"
+    },
+    "response": {
+        "status": 200,
+        "body": "{\"items\":[{\"tags\":[\"testing\",\"wiremock\",\"mockserver\",\"wiremock-standalone\",\"wiremock-record\"],\"owner\":{\"account_id\":10788870,\"reputation\":35,\"user_id\":7937050,\"user_type\":\"registered\",\"profile_image\":\"https://lh3.googleusercontent.com/-TL4l5ibvT0w/AAAAAAAAAAI/AAAAAAAAAIA/VEALfk5E2HY/photo.jpg?sz=256\",\"display_name\":\"curious n3ejdfne\",\"link\":\"https://stackoverflow.com/users/7937050/curious-n3ejdfne\"},\"is_answered\":false,\"view_count\":636,\"answer_count\":1,\"score\":1,\"last_activity_date\":1608740872,\"creation_date\":1608571898,\"question_id\":65397363,\"content_license\":\"CC BY-SA 4.0\",\"link\":\"https://stackoverflow.com/questions/65397363/wiremock-to-mock-public-backend-response\",\"title\":\"wiremock to mock public backend response\"}],\"has_more\":false,\"quota_max\":300,\"quota_remaining\":238}",
+        "headers": {
+            "Content-Type": "application/json"
+        }
+    }
+}
