@@ -11,11 +11,11 @@ import java.util.NoSuchElementException;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@WireMockTest(httpPort = 80)
+@WireMockTest
 public class StackOverflowClientTest {
     @Test
     public void fetchQuestionTest(WireMockRuntimeInfo wireMockRuntimeInfo) {
-        var stackOverflowClient = new StackOverflowClient("localhost");
+        var stackOverflowClient = new StackOverflowClient(wireMockRuntimeInfo.getHttpBaseUrl());
         var mock = wireMockRuntimeInfo.getWireMock();
 
         mock.loadMappingsFrom("src/test/resources/stackoverflow/");
@@ -39,8 +39,8 @@ public class StackOverflowClientTest {
     }
 
     @Test
-    public void noSuchQuestionTest() {
-        var stackOverflowClient = new StackOverflowClient("localhost");
+    public void noSuchQuestionTest(WireMockRuntimeInfo wireMockRuntimeInfo) {
+        var stackOverflowClient = new StackOverflowClient(wireMockRuntimeInfo.getHttpBaseUrl());
 
         assertThatThrownBy(() -> stackOverflowClient.fetchQuestion(123412))
             .isInstanceOf(NoSuchElementException.class);
