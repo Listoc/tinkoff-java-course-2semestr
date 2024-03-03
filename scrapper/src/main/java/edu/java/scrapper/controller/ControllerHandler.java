@@ -46,4 +46,10 @@ public class ControllerHandler {
         return new ApiErrorResponse("Found non integer id", BAD_REQUEST_STRING, e);
     }
 
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiErrorResponse otherExceptions(Exception e) {
+        return new ApiErrorResponse("Bad request", BAD_REQUEST_STRING, e);
+    }
+
 }
