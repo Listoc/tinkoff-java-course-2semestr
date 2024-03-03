@@ -1,6 +1,6 @@
 package edu.java.bot.controller;
 
-import edu.java.bot.model.LinkUpdateRequest;
+import edu.java.shared.model.LinkUpdateRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

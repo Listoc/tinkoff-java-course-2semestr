@@ -1,7 +1,7 @@
 package edu.java.scrapper.client;
 
 import edu.java.scrapper.http.BotService;
-import edu.java.scrapper.model.LinkUpdateRequest;
+import edu.java.shared.model.LinkUpdateRequest;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.reactive.function.client.WebClient;
