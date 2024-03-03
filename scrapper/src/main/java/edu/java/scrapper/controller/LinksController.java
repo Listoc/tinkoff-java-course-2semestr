@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,7 +43,7 @@ public class LinksController {
 
     @PostMapping("/links")
     @ResponseStatus(HttpStatus.OK)
-    public void addLink(@RequestHeader("Tg-Chat-Id") Long id, @RequestBody LinkRequest linkRequest) {
+    public void addLink(@RequestHeader("Tg-Chat-Id") Long id, @Valid @RequestBody LinkRequest linkRequest) {
         if (!links.containsKey(id)) {
             throw new ChatNotExistException(CHAT_NOT_EXIST_EXCEPTION_MESSAGE);
         }
@@ -56,7 +57,7 @@ public class LinksController {
 
     @DeleteMapping("/links")
     @ResponseStatus(HttpStatus.OK)
-    public void removeLink(@RequestHeader("Tg-Chat-Id") Long id, @RequestBody LinkRequest linkRequest) {
+    public void removeLink(@RequestHeader("Tg-Chat-Id") Long id, @Valid @RequestBody LinkRequest linkRequest) {
         if (!links.containsKey(id)) {
             throw new ChatNotExistException(CHAT_NOT_EXIST_EXCEPTION_MESSAGE);
         }
