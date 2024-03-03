@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class LinksController {
+    private static final String CHAT_NOT_EXIST_EXCEPTION_MESSAGE = "Chat is not registered";
     private final Map<Long, List<LinkResponse>> links = new ConcurrentHashMap<>();
     private final AtomicLong linkId = new AtomicLong(0);
 
@@ -33,7 +34,7 @@ public class LinksController {
     @ResponseStatus(HttpStatus.OK)
     public ListLinksResponse getAllLinks(@RequestHeader("Tg-Chat-Id") Long id) {
         if (!links.containsKey(id)) {
-            throw new ChatNotExistException();
+            throw new ChatNotExistException(CHAT_NOT_EXIST_EXCEPTION_MESSAGE);
         }
 
         return new ListLinksResponse(links.get(id), links.get(id).size());
@@ -43,11 +44,11 @@ public class LinksController {
     @ResponseStatus(HttpStatus.OK)
     public void addLink(@RequestHeader("Tg-Chat-Id") Long id, @RequestBody LinkRequest linkRequest) {
         if (!links.containsKey(id)) {
-            throw new ChatNotExistException();
+            throw new ChatNotExistException(CHAT_NOT_EXIST_EXCEPTION_MESSAGE);
         }
 
         if (links.get(id).stream().anyMatch(linkResponse -> linkResponse.url().equals(linkRequest.url()))) {
-            throw new LinkAlreadyExistException();
+            throw new LinkAlreadyExistException("Link has already been added to this chat");
         }
 
         links.get(id).add(new LinkResponse(linkId.incrementAndGet(), linkRequest.url()));
@@ -57,11 +58,11 @@ public class LinksController {
     @ResponseStatus(HttpStatus.OK)
     public void removeLink(@RequestHeader("Tg-Chat-Id") Long id, @RequestBody LinkRequest linkRequest) {
         if (!links.containsKey(id)) {
-            throw new ChatNotExistException();
+            throw new ChatNotExistException(CHAT_NOT_EXIST_EXCEPTION_MESSAGE);
         }
 
         if (links.get(id).stream().noneMatch(linkResponse -> linkResponse.url().equals(linkRequest.url()))) {
-            throw new LinkNotExistException();
+            throw new LinkNotExistException("This chat doesn't track this link");
         }
 
         links.put(

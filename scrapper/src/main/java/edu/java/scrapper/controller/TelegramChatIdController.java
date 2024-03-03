@@ -20,7 +20,7 @@ public class TelegramChatIdController {
     @PostMapping("/tg-chat/{id}")
     public ResponseEntity<?> registerChat(@PathVariable Long id) {
         if (links.containsKey(id)) {
-            throw new ChatAlreadyExistException();
+            throw new ChatAlreadyExistException("Chat has already been registered");
         }
 
         links.put(id, new ArrayList<>());
@@ -33,7 +33,7 @@ public class TelegramChatIdController {
         var result = links.remove(id);
 
         if (result == null) {
-            throw new ChatNotExistException();
+            throw new ChatNotExistException("Chat is not registered");
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(null);
