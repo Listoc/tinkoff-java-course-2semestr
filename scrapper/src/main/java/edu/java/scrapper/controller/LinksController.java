@@ -6,6 +6,11 @@ import edu.java.scrapper.exception.LinkNotExistException;
 import edu.java.shared.model.LinkRequest;
 import edu.java.shared.model.LinkResponse;
 import edu.java.shared.model.ListLinksResponse;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,11 +19,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
 
 @RestController
 public class LinksController {
@@ -26,8 +26,7 @@ public class LinksController {
     private final AtomicLong linkId = new AtomicLong(0);
 
     public LinksController() {
-        links.put(5L, new ArrayList<>());
-        links.put(4L, new ArrayList<>());
+        links.put(0L, new ArrayList<>());
     }
 
     @GetMapping("/links")
@@ -65,6 +64,9 @@ public class LinksController {
             throw new LinkNotExistException();
         }
 
-        links.put(id, links.get(id).stream().filter(linkResponse -> !linkResponse.url().equals(linkRequest.url())).toList());
+        links.put(
+            id,
+            links.get(id).stream().filter(linkResponse -> !linkResponse.url().equals(linkRequest.url())).toList()
+        );
     }
 }

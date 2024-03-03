@@ -13,34 +13,37 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 @RestControllerAdvice
 public class ControllerHandler {
+    private final static String BAD_REQUEST_STRING = "400";
+    private final static String NOT_FOUND_STRING = "404";
+
     @ExceptionHandler(ChatAlreadyExistException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiErrorResponse chatAlreadyExist(ChatAlreadyExistException e) {
-        return new ApiErrorResponse("Chat already exist", "400", e);
+        return new ApiErrorResponse("Chat already exist", BAD_REQUEST_STRING, e);
     }
 
     @ExceptionHandler(ChatNotExistException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ApiErrorResponse chatNotExist(ChatNotExistException e) {
-        return new ApiErrorResponse("Chat does not exist", "404", e);
+        return new ApiErrorResponse("Chat does not exist", NOT_FOUND_STRING, e);
     }
 
     @ExceptionHandler(LinkAlreadyExistException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiErrorResponse linkAlreadyExist(ChatAlreadyExistException e) {
-        return new ApiErrorResponse("Link already exist", "400", e);
+        return new ApiErrorResponse("Link already exist", BAD_REQUEST_STRING, e);
     }
 
     @ExceptionHandler(LinkNotExistException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ApiErrorResponse linkNotExist(ChatNotExistException e) {
-        return new ApiErrorResponse("Link does not exist", "404", e);
+        return new ApiErrorResponse("Link does not exist", NOT_FOUND_STRING, e);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiErrorResponse wrongPathVariable(MethodArgumentTypeMismatchException e) {
-        return new ApiErrorResponse("Found non integer id", "400", e);
+        return new ApiErrorResponse("Found non integer id", BAD_REQUEST_STRING, e);
     }
 
 }
