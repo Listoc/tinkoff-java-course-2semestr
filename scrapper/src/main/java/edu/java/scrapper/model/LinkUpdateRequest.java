@@ -1,22 +1,13 @@
 package edu.java.scrapper.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 
-public class LinkUpdateRequest {
-    @JsonProperty("id")
-    private final long id;
-    @JsonProperty("url")
-    private final URI url;
-    @JsonProperty("description")
-    private final String description;
-    @JsonProperty("tgChatIds")
-    private final long[] tgChatIds;
-
-    public LinkUpdateRequest(long id, URI url, String description, long[] tgChatIds) {
-        this.id = id;
-        this.url = url;
-        this.description = description;
-        this.tgChatIds = tgChatIds;
-    }
+public record LinkUpdateRequest(
+    @JsonProperty("id") @NotNull long id,
+    @JsonProperty("url") @NotNull URI url,
+    @JsonProperty("description") @NotNull String description,
+    @JsonProperty("tgChatIds") @NotEmpty long[] tgChatIds) {
 }
