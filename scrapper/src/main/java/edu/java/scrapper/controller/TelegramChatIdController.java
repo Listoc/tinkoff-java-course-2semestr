@@ -3,9 +3,9 @@ package edu.java.scrapper.controller;
 import edu.java.scrapper.exception.ChatAlreadyExistException;
 import edu.java.scrapper.exception.ChatNotExistException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class TelegramChatIdController {
-    private final Map<Long, List<String>> links = new HashMap<>();
+    private final Map<Long, List<String>> links = new ConcurrentHashMap<>();
 
     @PostMapping("/tg-chat/{id}")
     public ResponseEntity<?> registerChat(@PathVariable Long id) {
