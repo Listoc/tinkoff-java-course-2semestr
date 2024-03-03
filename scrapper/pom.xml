@@ -118,6 +118,11 @@
             <artifactId>kafka</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>edu.java.shared</groupId>
+            <artifactId>shared</artifactId>
+            <version>0.1</version>
+        </dependency>
     </dependencies>
 
     <build>

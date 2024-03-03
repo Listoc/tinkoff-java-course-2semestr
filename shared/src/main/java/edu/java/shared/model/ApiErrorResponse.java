@@ -1,4 +1,4 @@
-package edu.java.bot.model;
+package edu.java.shared.model;
 
 public record ApiErrorResponse(
     String description,

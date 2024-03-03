@@ -1,4 +1,4 @@
-package edu.java.scrapper.model;
+package edu.java.shared.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotEmpty;
