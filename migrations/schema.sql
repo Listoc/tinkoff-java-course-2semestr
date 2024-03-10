@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS chat
 --changeset listok:2
 CREATE TABLE IF NOT EXISTS link
 (
-	link_id bigint primary key,
+	link_id bigint generated always as identity primary key,
 	url text unique not null,
 	last_check timestamp with time zone not null
 );
