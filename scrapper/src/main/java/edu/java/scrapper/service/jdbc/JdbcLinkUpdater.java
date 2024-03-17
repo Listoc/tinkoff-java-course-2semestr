@@ -42,6 +42,7 @@ public class JdbcLinkUpdater implements LinkUpdater {
     public void update() {
         var links = jdbcLinkRepository.findAllBeforeDate(OffsetDateTime.now().minusMinutes(2));
         URI url;
+        StringBuilder description;
 
         for (var link : links) {
             var chats = tgChatListToLongArray(jdbcTgChatRepository.findAllByLinkId(link.getLinkId()));
@@ -65,12 +66,27 @@ public class JdbcLinkUpdater implements LinkUpdater {
                 }
 
                 var response = githubClient.fetchRepository(split[1], split[2]);
+
                 if (response.lastUpdateDate().isAfter(link.getLastCheckTime())) {
+                    var commits = githubClient.fetchCommits(split[1], split[2])
+                        .stream()
+                        .filter((c) -> c.commit().author().commitDate().isAfter(link.getLastCheckTime()))
+                        .toList();
+
+                    if (commits.isEmpty()) {
+                        description = new StringBuilder("Появились изменения в репозитории");
+                    } else {
+                        description = new StringBuilder("В репозитории появились новые коммиты:\n");
+                        for (var commit : commits) {
+                            description.append(commit.commit().message()).append("\n");
+                        }
+                    }
+
                     botClient.sendUpdates(
                         new LinkUpdateRequest(
                             link.getLinkId(),
                             link.getUrl(),
-                            "Появились изменения в репозитории",
+                                description.toString(),
                             chats)
                     );
                 }
@@ -84,11 +100,25 @@ public class JdbcLinkUpdater implements LinkUpdater {
                 var response = stackOverflowClient.fetchQuestion(Integer.parseInt(split[2]));
 
                 if (response.lastUpdateDate().isAfter(link.getLastCheckTime())) {
+                    var answers = stackOverflowClient.fetchAnswers(Integer.parseInt(split[2]))
+                        .stream()
+                        .filter((a) -> a.answerDate().isAfter(link.getLastCheckTime()))
+                        .toList();
+
+                    if (answers.isEmpty()) {
+                        description = new StringBuilder("Появились изменения в вопросе");
+                    } else {
+                        description = new StringBuilder("В вопросе появились новые ответы:\n");
+                        for (var answer : answers) {
+                            description.append(answer.title()).append("\n");
+                        }
+                    }
+
                     botClient.sendUpdates(
                         new LinkUpdateRequest(
                             link.getLinkId(),
                             link.getUrl(),
-                            "Появились изменения в вопросе",
+                                description.toString(),
                             chats)
                     );
                 }
