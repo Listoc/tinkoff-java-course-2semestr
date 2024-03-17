@@ -17,6 +17,10 @@ CREATE TABLE IF NOT EXISTS link
 --changeset listok:3
 CREATE TABLE IF NOT EXISTS chat_link_map
 (
-	chat_id bigint references chat(chat_id),
-	link_id bigint references link(link_id)
+	chat_id bigint references chat(chat_id) ON DELETE CASCADE,
+	link_id bigint references link(link_id) ON DELETE CASCADE
 );
+
+--changeset listok:4
+ALTER TABLE chat_link_map
+ADD UNIQUE(chat_id, link_id);

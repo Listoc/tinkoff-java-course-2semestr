@@ -8,6 +8,8 @@ public record ClientProperties(
     @NotNull
     String git,
     @NotNull
-    String stackOverflow
+    String stackOverflow,
+    @NotNull
+    String bot
 ) {
 }

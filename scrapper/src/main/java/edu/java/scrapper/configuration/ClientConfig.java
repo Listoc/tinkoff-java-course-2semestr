@@ -1,5 +1,6 @@
 package edu.java.scrapper.configuration;
 
+import edu.java.scrapper.client.BotClient;
 import edu.java.scrapper.client.GithubClient;
 import edu.java.scrapper.client.StackOverflowClient;
 import org.springframework.context.annotation.Bean;
@@ -21,5 +22,10 @@ public class ClientConfig {
     @Bean
     public StackOverflowClient stackOverflowClient() {
         return new StackOverflowClient(clientProperties.stackOverflow());
+    }
+
+    @Bean
+    public BotClient botClient() {
+        return new BotClient(clientProperties.bot());
     }
 }

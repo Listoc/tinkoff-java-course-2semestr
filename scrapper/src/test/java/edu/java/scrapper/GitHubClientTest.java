@@ -27,10 +27,10 @@ public class GitHubClientTest {
             OffsetDateTime.of(
                 2024,
                 2,
-                8,
-                19,
-                4,
-                49,
+                22,
+                17,
+                28,
+                33,
                 0,
                 ZoneOffset.UTC
             )

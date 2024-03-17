@@ -7,11 +7,6 @@ import java.util.HashSet;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class Hw4Test extends IntegrationTest {
-    @AfterAll
-    public static void close() {
-        POSTGRES.close();
-    }
-
     @Test
     public void someTest() throws SQLException {
         var connection = POSTGRES.createConnection("");
