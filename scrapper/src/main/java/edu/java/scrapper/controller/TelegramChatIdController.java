@@ -1,7 +1,6 @@
 package edu.java.scrapper.controller;
 
 import edu.java.scrapper.service.TgChatService;
-import edu.java.scrapper.service.jdbc.JdbcTgChatService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
