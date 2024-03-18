@@ -1,13 +1,11 @@
 package edu.java.scrapper.service.jdbc;
 
 import edu.java.scrapper.exception.ChatNotExistException;
-import edu.java.scrapper.model.TgChat;
+import edu.java.scrapper.model.ChatDTO;
 import edu.java.scrapper.repository.jdbc.JdbcTgChatRepository;
 import edu.java.scrapper.service.TgChatService;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
 public class JdbcTgChatService implements TgChatService {
     private final JdbcTgChatRepository jdbcTgChatRepository;
 
@@ -16,7 +14,7 @@ public class JdbcTgChatService implements TgChatService {
     }
 
     @Transactional
-    public TgChat register(long tgChatId) {
+    public ChatDTO register(long tgChatId) {
         var tgChat = jdbcTgChatRepository.findChatById(tgChatId);
 
         if (tgChat == null) {
@@ -28,7 +26,7 @@ public class JdbcTgChatService implements TgChatService {
     }
 
     @Transactional
-    public TgChat unregister(long tgChatId) {
+    public ChatDTO unregister(long tgChatId) {
         var tgChat = jdbcTgChatRepository.findChatById(tgChatId);
 
         if (tgChat == null) {

@@ -1,6 +1,6 @@
 package edu.java.scrapper.repository.jdbc;
 
-import edu.java.scrapper.model.TgChat;
+import edu.java.scrapper.model.ChatDTO;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -26,7 +26,7 @@ public class JdbcTgChatRepository {
         jdbcTemplate.update(removeChat, tgChatId);
     }
 
-    public TgChat findChatById(long tgChatId) {
+    public ChatDTO findChatById(long tgChatId) {
         var findChat = "SELECT * FROM chat WHERE chat_id = ?;";
         var chatList = jdbcTemplate.query(findChat, getTgChatRowMapper(), tgChatId);
 
@@ -37,20 +37,20 @@ public class JdbcTgChatRepository {
         return chatList.getFirst();
     }
 
-    public List<TgChat> findAllByLinkId(long linkId) {
+    public List<ChatDTO> findAllByLinkId(long linkId) {
         var findAllChats =
             "SELECT * FROM chat c JOIN chat_link_map clm ON c.chat_id = clm.chat_id WHERE clm.link_id = ?;";
         return jdbcTemplate.query(findAllChats, getTgChatRowMapper(), linkId);
     }
 
-    public List<TgChat> findAll() {
+    public List<ChatDTO> findAll() {
         var findAllChats = "SELECT * FROM chat";
         return jdbcTemplate.query(findAllChats, getTgChatRowMapper());
     }
 
-    public static RowMapper<TgChat> getTgChatRowMapper() {
+    public static RowMapper<ChatDTO> getTgChatRowMapper() {
         return (r, i) -> {
-            var tgChat = new TgChat();
+            var tgChat = new ChatDTO();
             tgChat.setChatId(r.getLong("chat_id"));
             return tgChat;
         };

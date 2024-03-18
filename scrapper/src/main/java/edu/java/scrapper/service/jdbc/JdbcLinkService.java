@@ -1,16 +1,14 @@
 package edu.java.scrapper.service.jdbc;
 
 import edu.java.scrapper.exception.LinkNotExistException;
-import edu.java.scrapper.model.Link;
+import edu.java.scrapper.model.LinkDTO;
 import edu.java.scrapper.repository.jdbc.JdbcLinkRepository;
 import edu.java.scrapper.repository.jdbc.JdbcTgChatRepository;
 import edu.java.scrapper.service.LinkService;
 import java.net.URI;
 import java.util.List;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
 public class JdbcLinkService implements LinkService {
     private final JdbcLinkRepository jdbcLinkRepository;
     private final JdbcTgChatRepository jdbcTgChatRepository;
@@ -21,7 +19,7 @@ public class JdbcLinkService implements LinkService {
     }
 
     @Transactional
-    public Link add(long tgChatId, URI url) {
+    public LinkDTO add(long tgChatId, URI url) {
         var stringUrl = url.toString();
         var link = jdbcLinkRepository.findLinkByUrl(stringUrl);
         if (link == null) {
@@ -34,7 +32,7 @@ public class JdbcLinkService implements LinkService {
     }
 
     @Transactional
-    public Link remove(long tgChatId, URI url) {
+    public LinkDTO remove(long tgChatId, URI url) {
         var stringUrl = url.toString();
         var link = jdbcLinkRepository.findLinkByUrl(stringUrl);
 
@@ -48,7 +46,7 @@ public class JdbcLinkService implements LinkService {
     }
 
     @Transactional
-    public List<Link> getLinks(long tgChatId) {
+    public List<LinkDTO> getLinks(long tgChatId) {
         return jdbcLinkRepository.findAllByChatId(tgChatId);
     }
 }

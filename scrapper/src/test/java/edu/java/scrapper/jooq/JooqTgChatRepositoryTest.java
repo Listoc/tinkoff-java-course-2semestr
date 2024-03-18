@@ -1,8 +1,10 @@
-package edu.java.scrapper.jdbc;
+package edu.java.scrapper.jooq;
 
 import edu.java.scrapper.IntegrationTest;
 import edu.java.scrapper.repository.jdbc.JdbcLinkRepository;
 import edu.java.scrapper.repository.jdbc.JdbcTgChatRepository;
+import edu.java.scrapper.repository.jooq.JooqLinkRepository;
+import edu.java.scrapper.repository.jooq.JooqTgChatRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,20 +15,20 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-public class JdbcTgChatRepositoryTest extends IntegrationTest {
+public class JooqTgChatRepositoryTest extends IntegrationTest {
     private final JdbcTemplate jdbcTemplate;
-    private final JdbcLinkRepository jdbcLinkRepository;
-    private final JdbcTgChatRepository jdbcTgChatRepository;
+    private final JooqLinkRepository jooqLinkRepository;
+    private final JooqTgChatRepository jooqTgChatRepository;
 
     @Autowired
-    public JdbcTgChatRepositoryTest(
+    public JooqTgChatRepositoryTest(
         JdbcTemplate jdbcTemplate,
-        JdbcLinkRepository jdbcLinkRepository,
-        JdbcTgChatRepository jdbcTgChatRepository
+        JooqLinkRepository jooqLinkRepository,
+        JooqTgChatRepository jooqTgChatRepository
     ) {
         this.jdbcTemplate = jdbcTemplate;
-        this.jdbcLinkRepository = jdbcLinkRepository;
-        this.jdbcTgChatRepository = jdbcTgChatRepository;
+        this.jooqLinkRepository = jooqLinkRepository;
+        this.jooqTgChatRepository = jooqTgChatRepository;
     }
 
     @BeforeEach
@@ -40,7 +42,7 @@ public class JdbcTgChatRepositoryTest extends IntegrationTest {
     @Transactional
     @Rollback
     public void addTest() {
-        jdbcTgChatRepository.addChat(5);
+        jooqTgChatRepository.addChat(5);
 
         var getChat = "SELECT * FROM chat WHERE chat_id = ?;";
 
@@ -54,7 +56,7 @@ public class JdbcTgChatRepositoryTest extends IntegrationTest {
     @Transactional
     @Rollback
     public void removeTest() {
-        jdbcTgChatRepository.addChat(5);
+        jooqTgChatRepository.addChat(5);
 
         var getChat = "SELECT * FROM chat WHERE chat_id = ?;";
 
@@ -62,7 +64,7 @@ public class JdbcTgChatRepositoryTest extends IntegrationTest {
 
         assertThat(chats.size()).isEqualTo(1);
 
-        jdbcTgChatRepository.removeChat(5);
+        jooqTgChatRepository.removeChat(5);
 
         chats = jdbcTemplate.query(getChat, JdbcTgChatRepository.getTgChatRowMapper(), 5);
 
@@ -73,9 +75,9 @@ public class JdbcTgChatRepositoryTest extends IntegrationTest {
     @Transactional
     @Rollback
     public void findChatTest() {
-        jdbcTgChatRepository.addChat(5);
+        jooqTgChatRepository.addChat(5);
 
-        var chat = jdbcTgChatRepository.findChatById(5);
+        var chat = jooqTgChatRepository.findChatById(5);
 
         assertThat(chat.getChatId()).isEqualTo(5);
     }
@@ -84,10 +86,10 @@ public class JdbcTgChatRepositoryTest extends IntegrationTest {
     @Transactional
     @Rollback
     public void findAllTest() {
-        jdbcTgChatRepository.addChat(5);
-        jdbcTgChatRepository.addChat(6);
+        jooqTgChatRepository.addChat(5);
+        jooqTgChatRepository.addChat(6);
 
-        var chats = jdbcTgChatRepository.findAll();
+        var chats = jooqTgChatRepository.findAll();
 
         var findAll = "SELECT * FROM chat";
 
@@ -100,18 +102,18 @@ public class JdbcTgChatRepositoryTest extends IntegrationTest {
     @Transactional
     @Rollback
     public void findAllByLinkIdTest() {
-        jdbcTgChatRepository.addChat(5);
-        jdbcTgChatRepository.addChat(6);
-        jdbcTgChatRepository.addChat(7);
+        jooqTgChatRepository.addChat(5);
+        jooqTgChatRepository.addChat(6);
+        jooqTgChatRepository.addChat(7);
 
-        jdbcLinkRepository.addLink("testlink");
+        jooqLinkRepository.addLink("testlink");
 
-        var link = jdbcLinkRepository.findLinkByUrl("testlink");
+        var link = jooqLinkRepository.findLinkByUrl("testlink");
 
-        jdbcLinkRepository.addChatLinkMapping(5, link.getLinkId());
-        jdbcLinkRepository.addChatLinkMapping(6, link.getLinkId());
+        jooqLinkRepository.addChatLinkMapping(5, link.getLinkId());
+        jooqLinkRepository.addChatLinkMapping(6, link.getLinkId());
 
-        var chats = jdbcTgChatRepository.findAllByLinkId(link.getLinkId());
+        var chats = jooqTgChatRepository.findAllByLinkId(link.getLinkId());
 
         assertThat(chats.size()).isEqualTo(2);
     }

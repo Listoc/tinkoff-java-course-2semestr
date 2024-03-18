@@ -1,9 +1,9 @@
 package edu.java.scrapper.service;
 
-import edu.java.scrapper.model.TgChat;
+import edu.java.scrapper.model.ChatDTO;
 
 public interface TgChatService {
-    TgChat register(long tgChatId);
+    ChatDTO register(long tgChatId);
 
-    TgChat unregister(long tgChatId);
+    ChatDTO unregister(long tgChatId);
 }

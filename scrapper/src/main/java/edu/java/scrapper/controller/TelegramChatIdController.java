@@ -1,5 +1,6 @@
 package edu.java.scrapper.controller;
 
+import edu.java.scrapper.service.TgChatService;
 import edu.java.scrapper.service.jdbc.JdbcTgChatService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -10,21 +11,21 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class TelegramChatIdController {
-    private final JdbcTgChatService jdbcTgChatService;
+    private final TgChatService tgChatService;
 
-    public TelegramChatIdController(JdbcTgChatService jdbcTgChatService) {
-        this.jdbcTgChatService = jdbcTgChatService;
+    public TelegramChatIdController(TgChatService tgChatService) {
+        this.tgChatService = tgChatService;
     }
 
     @PostMapping("/tg-chat/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void registerChat(@PathVariable Long id) {
-        jdbcTgChatService.register(id);
+        tgChatService.register(id);
     }
 
     @DeleteMapping("/tg-chat/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void deleteChat(@PathVariable Long id) {
-        jdbcTgChatService.unregister(id);
+        tgChatService.unregister(id);
     }
 }

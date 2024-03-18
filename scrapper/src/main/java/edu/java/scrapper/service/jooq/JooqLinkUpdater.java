@@ -1,36 +1,37 @@
-package edu.java.scrapper.service.jdbc;
+package edu.java.scrapper.service.jooq;
 
 import edu.java.scrapper.client.BotClient;
 import edu.java.scrapper.client.GithubClient;
 import edu.java.scrapper.client.StackOverflowClient;
 import edu.java.scrapper.model.ChatDTO;
-import edu.java.scrapper.repository.jdbc.JdbcLinkRepository;
-import edu.java.scrapper.repository.jdbc.JdbcTgChatRepository;
+import edu.java.scrapper.repository.jooq.JooqLinkRepository;
+import edu.java.scrapper.repository.jooq.JooqTgChatRepository;
 import edu.java.scrapper.service.LinkUpdater;
 import edu.java.shared.model.LinkUpdateRequest;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.List;
+import org.springframework.stereotype.Service;
 
-public class JdbcLinkUpdater implements LinkUpdater {
-    private final JdbcLinkRepository jdbcLinkRepository;
-    private final JdbcTgChatRepository jdbcTgChatRepository;
+@Service
+public class JooqLinkUpdater implements LinkUpdater {
+    private final JooqLinkRepository jooqLinkRepository;
+    private final JooqTgChatRepository jooqTgChatRepository;
     private final BotClient botClient;
     private final StackOverflowClient stackOverflowClient;
     private final GithubClient githubClient;
     private final static int GITHUB_PATH_LENGTH = 3;
     private final static int SOF_PATH_LENGTH = 4;
 
-
-    public JdbcLinkUpdater(
-        JdbcLinkRepository jdbcLinkRepository,
-        JdbcTgChatRepository jdbcTgChatRepository,
+    public JooqLinkUpdater(
+        JooqLinkRepository jooqLinkRepository,
+        JooqTgChatRepository jooqTgChatRepository,
         BotClient botClient,
         StackOverflowClient stackOverflowClient,
         GithubClient githubClient
     ) {
-        this.jdbcLinkRepository = jdbcLinkRepository;
-        this.jdbcTgChatRepository = jdbcTgChatRepository;
+        this.jooqLinkRepository = jooqLinkRepository;
+        this.jooqTgChatRepository = jooqTgChatRepository;
         this.botClient = botClient;
         this.stackOverflowClient = stackOverflowClient;
         this.githubClient = githubClient;
@@ -38,15 +39,15 @@ public class JdbcLinkUpdater implements LinkUpdater {
 
     @Override
     public void update() {
-        var links = jdbcLinkRepository.findAllBeforeDate(OffsetDateTime.now().minusMinutes(2));
+        var links = jooqLinkRepository.findAllBeforeDate(OffsetDateTime.now().minusMinutes(2));
         URI url;
         StringBuilder description;
 
         for (var link : links) {
-            var chats = tgChatListToLongArray(jdbcTgChatRepository.findAllByLinkId(link.getLinkId()));
+            var chats = tgChatListToLongArray(jooqTgChatRepository.findAllByLinkId(link.getLinkId()));
 
             if (chats.length == 0) {
-                jdbcLinkRepository.removeLinkByUrl(link.getUrl().toString());
+                jooqLinkRepository.removeLinkByUrl(link.getUrl().toString());
                 continue;
             }
 
@@ -121,7 +122,7 @@ public class JdbcLinkUpdater implements LinkUpdater {
                     );
                 }
             } else {
-                jdbcLinkRepository.removeLinkByUrl(link.getUrl().toString());
+                jooqLinkRepository.removeLinkByUrl(link.getUrl().toString());
                 botClient.sendUpdates(
                     new LinkUpdateRequest(
                         link.getLinkId(),
@@ -130,7 +131,7 @@ public class JdbcLinkUpdater implements LinkUpdater {
                         chats)
                 );
             }
-            jdbcLinkRepository.updateLinkLastCheckDate(link.getLinkId());
+            jooqLinkRepository.updateLinkLastCheckDate(link.getLinkId());
         }
     }
 

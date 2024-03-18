@@ -1,8 +1,14 @@
-package edu.java.scrapper.jdbc;
+package edu.java.scrapper.jooq;
 
 import edu.java.scrapper.IntegrationTest;
 import edu.java.scrapper.repository.jdbc.JdbcLinkRepository;
+import java.net.URI;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.OffsetDateTime;
+import java.util.List;
 import edu.java.scrapper.repository.jdbc.JdbcTgChatRepository;
+import edu.java.scrapper.repository.jooq.JooqLinkRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,25 +17,20 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
-import java.net.URI;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.time.OffsetDateTime;
-import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-public class JdbcLinkRepositoryTest extends IntegrationTest {
+public class JooqLinkRepositoryTest extends IntegrationTest {
     private final JdbcTemplate jdbcTemplate;
-    private final JdbcLinkRepository jdbcLinkRepository;
+    private final JooqLinkRepository jooqLinkRepository;
 
     @Autowired
-    public JdbcLinkRepositoryTest(
+    public JooqLinkRepositoryTest(
         JdbcTemplate jdbcTemplate,
-        JdbcLinkRepository jdbcLinkRepository
+        JooqLinkRepository jooqLinkRepository
     ) {
         this.jdbcTemplate = jdbcTemplate;
-        this.jdbcLinkRepository = jdbcLinkRepository;
+        this.jooqLinkRepository = jooqLinkRepository;
     }
 
     @BeforeEach
@@ -47,7 +48,7 @@ public class JdbcLinkRepositoryTest extends IntegrationTest {
     @Transactional
     @Rollback
     public void addTest() {
-        jdbcLinkRepository.addLink("testlink");
+        jooqLinkRepository.addLink("testlink");
 
         var getLink = "SELECT * FROM link WHERE url = ?;";
 
@@ -62,16 +63,18 @@ public class JdbcLinkRepositoryTest extends IntegrationTest {
     @Transactional
     @Rollback
     public void updateDateTest() throws InterruptedException {
-        jdbcLinkRepository.addLink("testlink");
+        jooqLinkRepository.addLink("testlink");
 
-        var link = jdbcLinkRepository.findLinkByUrl("testlink");
+        var link = jooqLinkRepository.findLinkByUrl("testlink");
+        System.out.println(link);
         var date = link.getLastCheck();
 
         Thread.sleep(1500);
 
-        jdbcLinkRepository.updateLinkLastCheckDate(link.getLinkId());
+        jooqLinkRepository.updateLinkLastCheckDate(link.getLinkId());
 
-        link = jdbcLinkRepository.findLinkByUrl("testlink");
+        link = jooqLinkRepository.findLinkByUrl("testlink");
+        System.out.println(link);
         var date2 = link.getLastCheck();
 
         assertThat(date).isBefore(date2);
@@ -81,7 +84,7 @@ public class JdbcLinkRepositoryTest extends IntegrationTest {
     @Transactional
     @Rollback
     public void removeTest() {
-        jdbcLinkRepository.addLink("testlink");
+        jooqLinkRepository.addLink("testlink");
 
         var getLink = "SELECT * FROM link WHERE url = ?;";
 
@@ -89,7 +92,7 @@ public class JdbcLinkRepositoryTest extends IntegrationTest {
 
         assertThat(links.size()).isEqualTo(1);
 
-        jdbcLinkRepository.removeLinkByUrl("testlink");
+        jooqLinkRepository.removeLinkByUrl("testlink");
 
         links = jdbcTemplate.query(getLink, JdbcLinkRepository.getLinkRowMapper(), "testlink");
 
@@ -100,9 +103,9 @@ public class JdbcLinkRepositoryTest extends IntegrationTest {
     @Transactional
     @Rollback
     public void findLinkTest() {
-        jdbcLinkRepository.addLink("testlink");
+        jooqLinkRepository.addLink("testlink");
 
-        var link = jdbcLinkRepository.findLinkByUrl("testlink");
+        var link = jooqLinkRepository.findLinkByUrl("testlink");
 
         assertThat(link.getUrl()).isEqualTo(URI.create("testlink"));
         assertThat(link.getLastCheck()).isBetween(OffsetDateTime.now().minusSeconds(2), OffsetDateTime.now().plusSeconds(2));
@@ -112,11 +115,11 @@ public class JdbcLinkRepositoryTest extends IntegrationTest {
     @Transactional
     @Rollback
     public void addChatLinkMappingTest() {
-        jdbcLinkRepository.addLink("testlink");
+        jooqLinkRepository.addLink("testlink");
 
-        var link = jdbcLinkRepository.findLinkByUrl("testlink");
+        var link = jooqLinkRepository.findLinkByUrl("testlink");
 
-        jdbcLinkRepository.addChatLinkMapping(5, link.getLinkId());
+        jooqLinkRepository.addChatLinkMapping(5, link.getLinkId());
 
         var getMapping = "SELECT chat_id FROM chat_link_map WHERE link_id = ?;";
 
@@ -129,11 +132,11 @@ public class JdbcLinkRepositoryTest extends IntegrationTest {
     @Transactional
     @Rollback
     public void removeChatLinkMappingTest() {
-        jdbcLinkRepository.addLink("testlink");
+        jooqLinkRepository.addLink("testlink");
 
-        var link = jdbcLinkRepository.findLinkByUrl("testlink");
+        var link = jooqLinkRepository.findLinkByUrl("testlink");
 
-        jdbcLinkRepository.addChatLinkMapping(5, link.getLinkId());
+        jooqLinkRepository.addChatLinkMapping(5, link.getLinkId());
 
         var getMappingsCount = "SELECT count(*) FROM chat_link_map;";
 
@@ -146,7 +149,7 @@ public class JdbcLinkRepositoryTest extends IntegrationTest {
 
         assertThat(count.getFirst()).isEqualTo(1);
 
-        jdbcLinkRepository.removeChatLinkMapping(5, link.getLinkId());
+        jooqLinkRepository.removeChatLinkMapping(5, link.getLinkId());
 
         count = jdbcTemplate.query(getMappingsCount, new RowMapper<Integer>() {
             @Override
@@ -162,10 +165,10 @@ public class JdbcLinkRepositoryTest extends IntegrationTest {
     @Transactional
     @Rollback
     public void findAllTest() {
-        jdbcLinkRepository.addLink("testlink");
-        jdbcLinkRepository.addLink("anotherlink");
+        jooqLinkRepository.addLink("testlink");
+        jooqLinkRepository.addLink("anotherlink");
 
-        var links = jdbcLinkRepository.findAll();
+        var links = jooqLinkRepository.findAll();
 
         var findAll = "SELECT * FROM link";
 
@@ -178,17 +181,17 @@ public class JdbcLinkRepositoryTest extends IntegrationTest {
     @Transactional
     @Rollback
     public void findAllByChatIdTest() {
-        jdbcLinkRepository.addLink("testlink");
-        jdbcLinkRepository.addLink("anotherlink");
-        jdbcLinkRepository.addLink("finallink");
+        jooqLinkRepository.addLink("testlink");
+        jooqLinkRepository.addLink("anotherlink");
+        jooqLinkRepository.addLink("finallink");
 
-        var link1 = jdbcLinkRepository.findLinkByUrl("testlink");
-        var link2 = jdbcLinkRepository.findLinkByUrl("anotherlink");
+        var link1 = jooqLinkRepository.findLinkByUrl("testlink");
+        var link2 = jooqLinkRepository.findLinkByUrl("anotherlink");
 
-        jdbcLinkRepository.addChatLinkMapping(5, link1.getLinkId());
-        jdbcLinkRepository.addChatLinkMapping(5, link2.getLinkId());
+        jooqLinkRepository.addChatLinkMapping(5, link1.getLinkId());
+        jooqLinkRepository.addChatLinkMapping(5, link2.getLinkId());
 
-        var links = jdbcLinkRepository.findAllByChatId(5);
+        var links = jooqLinkRepository.findAllByChatId(5);
 
         assertThat(links.size()).isEqualTo(2);
         assertThat(links).containsExactlyInAnyOrderElementsOf(List.of(link1, link2));
