@@ -1,6 +1,8 @@
 app:
   scheduler:
     interval: 20s
+  updater:
+    interval: 2m
   url:
     git: https://api.github.com
     stackoverflow: https://api.stackexchange.com/2.3
