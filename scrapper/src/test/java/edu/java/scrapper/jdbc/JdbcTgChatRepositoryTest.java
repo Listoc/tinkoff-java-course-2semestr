@@ -1,10 +1,8 @@
 package edu.java.scrapper.jdbc;
 
 import edu.java.scrapper.IntegrationTest;
-import edu.java.scrapper.model.TgChat;
 import edu.java.scrapper.repository.jdbc.JdbcLinkRepository;
 import edu.java.scrapper.repository.jdbc.JdbcTgChatRepository;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,7 +75,7 @@ public class JdbcTgChatRepositoryTest extends IntegrationTest {
     public void findChatTest() {
         jdbcTgChatRepository.addChat(5);
 
-        var chat = jdbcTgChatRepository.findChatById(5);
+        var chat = jdbcTgChatRepository.findChatById(5).get();
 
         assertThat(chat.getChatId()).isEqualTo(5);
     }
@@ -108,7 +106,7 @@ public class JdbcTgChatRepositoryTest extends IntegrationTest {
 
         jdbcLinkRepository.addLink("testlink");
 
-        var link = jdbcLinkRepository.findLinkByUrl("testlink");
+        var link = jdbcLinkRepository.findLinkByUrl("testlink").get();
 
         jdbcLinkRepository.addChatLinkMapping(5, link.getLinkId());
         jdbcLinkRepository.addChatLinkMapping(6, link.getLinkId());
