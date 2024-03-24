@@ -1,9 +1,10 @@
 package edu.java.scrapper.service.jdbc;
 
-import edu.java.scrapper.exception.ChatNotExistException;
+import edu.java.scrapper.exception.CantAddToDBException;
 import edu.java.scrapper.model.TgChat;
 import edu.java.scrapper.repository.jdbc.JdbcTgChatRepository;
 import edu.java.scrapper.service.TgChatService;
+import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,24 +20,23 @@ public class JdbcTgChatService implements TgChatService {
     public TgChat register(long tgChatId) {
         var tgChat = jdbcTgChatRepository.findChatById(tgChatId);
 
-        if (tgChat == null) {
+        if (tgChat.isEmpty()) {
             jdbcTgChatRepository.addChat(tgChatId);
             tgChat = jdbcTgChatRepository.findChatById(tgChatId);
         }
 
-        return tgChat;
+        return tgChat.orElseThrow(() -> new CantAddToDBException("Cant add new chat to DB"));
     }
 
     @Transactional
-    public TgChat unregister(long tgChatId) {
+    public void unregister(long tgChatId) {
         var tgChat = jdbcTgChatRepository.findChatById(tgChatId);
 
-        if (tgChat == null) {
-            throw new ChatNotExistException("No such chat in DB");
-        }
+        tgChat.ifPresent(value -> jdbcTgChatRepository.removeChat(value.getChatId()));
+    }
 
-        jdbcTgChatRepository.removeChat(tgChatId);
-
-        return tgChat;
+    @Transactional
+    public List<TgChat> getChats(long linkId) {
+        return jdbcTgChatRepository.findAllByLinkId(linkId);
     }
 }
