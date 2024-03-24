@@ -12,7 +12,9 @@ import org.springframework.validation.annotation.Validated;
 @ConfigurationProperties(prefix = "app")
 public record ApplicationConfig(
     @NotNull
-    Scheduler scheduler
+    Scheduler scheduler,
+    @NotNull
+    AccessType databaseAccessType
 ) {
     @Bean
     public Scheduler scheduler() {
@@ -20,5 +22,10 @@ public record ApplicationConfig(
     }
 
     public record Scheduler(@NotNull Duration interval) {
+    }
+
+    public enum AccessType {
+        JDBC, JPA,
+        //JOOQ
     }
 }

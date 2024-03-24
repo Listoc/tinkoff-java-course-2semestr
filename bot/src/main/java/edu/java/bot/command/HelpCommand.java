@@ -14,13 +14,13 @@ public class HelpCommand extends AbstractCommand implements Command {
 
     @Autowired
     public HelpCommand(@NotNull List<Command> commands) {
-        super("/help", "get other commands info");
+        super("/help", "получить информацию о других командах");
         this.commands = commands;
     }
 
     @Override
     public SendMessage handle(@NotNull Update update) {
-        StringBuilder text = new StringBuilder("Bot supports next commands:\n");
+        StringBuilder text = new StringBuilder("Бот поддерживает следующие команды:\n");
 
         for (var command : commands) {
             text
