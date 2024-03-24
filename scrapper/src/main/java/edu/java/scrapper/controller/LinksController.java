@@ -37,7 +37,7 @@ public class LinksController {
     }
 
     @DeleteMapping("/links")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeLink(@RequestHeader("Tg-Chat-Id") Long id, @Valid @RequestBody LinkRequest linkRequest) {
         linkService.remove(id, linkRequest.url());
     }

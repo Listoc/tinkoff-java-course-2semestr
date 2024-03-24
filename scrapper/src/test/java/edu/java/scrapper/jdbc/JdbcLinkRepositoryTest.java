@@ -8,12 +8,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import java.net.URI;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.time.OffsetDateTime;
 import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -64,14 +61,14 @@ public class JdbcLinkRepositoryTest extends IntegrationTest {
     public void updateDateTest() throws InterruptedException {
         jdbcLinkRepository.addLink("testlink");
 
-        var link = jdbcLinkRepository.findLinkByUrl("testlink");
+        var link = jdbcLinkRepository.findLinkByUrl("testlink").get();
         var date = link.getLastCheck();
 
         Thread.sleep(1500);
 
         jdbcLinkRepository.updateLinkLastCheckDate(link.getLinkId());
 
-        link = jdbcLinkRepository.findLinkByUrl("testlink");
+        link = jdbcLinkRepository.findLinkByUrl("testlink").get();
         var date2 = link.getLastCheck();
 
         assertThat(date).isBefore(date2);
@@ -102,7 +99,7 @@ public class JdbcLinkRepositoryTest extends IntegrationTest {
     public void findLinkTest() {
         jdbcLinkRepository.addLink("testlink");
 
-        var link = jdbcLinkRepository.findLinkByUrl("testlink");
+        var link = jdbcLinkRepository.findLinkByUrl("testlink").get();
 
         assertThat(link.getUrl()).isEqualTo(URI.create("testlink"));
         assertThat(link.getLastCheck()).isBetween(OffsetDateTime.now().minusSeconds(2), OffsetDateTime.now().plusSeconds(2));
@@ -114,7 +111,7 @@ public class JdbcLinkRepositoryTest extends IntegrationTest {
     public void addChatLinkMappingTest() {
         jdbcLinkRepository.addLink("testlink");
 
-        var link = jdbcLinkRepository.findLinkByUrl("testlink");
+        var link = jdbcLinkRepository.findLinkByUrl("testlink").get();
 
         jdbcLinkRepository.addChatLinkMapping(5, link.getLinkId());
 
@@ -131,29 +128,19 @@ public class JdbcLinkRepositoryTest extends IntegrationTest {
     public void removeChatLinkMappingTest() {
         jdbcLinkRepository.addLink("testlink");
 
-        var link = jdbcLinkRepository.findLinkByUrl("testlink");
+        var link = jdbcLinkRepository.findLinkByUrl("testlink").get();
 
         jdbcLinkRepository.addChatLinkMapping(5, link.getLinkId());
 
         var getMappingsCount = "SELECT count(*) FROM chat_link_map;";
 
-        var count = jdbcTemplate.query(getMappingsCount, new RowMapper<Integer>() {
-            @Override
-            public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
-                return rs.getInt(1);
-            }
-        });
+        var count = jdbcTemplate.query(getMappingsCount, (rs, rowNum) -> rs.getInt(1));
 
         assertThat(count.getFirst()).isEqualTo(1);
 
         jdbcLinkRepository.removeChatLinkMapping(5, link.getLinkId());
 
-        count = jdbcTemplate.query(getMappingsCount, new RowMapper<Integer>() {
-            @Override
-            public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
-                return rs.getInt(1);
-            }
-        });
+        count = jdbcTemplate.query(getMappingsCount, (rs, rowNum) -> rs.getInt(1));
 
         assertThat(count.getFirst()).isEqualTo(0);
     }
@@ -182,8 +169,8 @@ public class JdbcLinkRepositoryTest extends IntegrationTest {
         jdbcLinkRepository.addLink("anotherlink");
         jdbcLinkRepository.addLink("finallink");
 
-        var link1 = jdbcLinkRepository.findLinkByUrl("testlink");
-        var link2 = jdbcLinkRepository.findLinkByUrl("anotherlink");
+        var link1 = jdbcLinkRepository.findLinkByUrl("testlink").get();
+        var link2 = jdbcLinkRepository.findLinkByUrl("anotherlink").get();
 
         jdbcLinkRepository.addChatLinkMapping(5, link1.getLinkId());
         jdbcLinkRepository.addChatLinkMapping(5, link2.getLinkId());

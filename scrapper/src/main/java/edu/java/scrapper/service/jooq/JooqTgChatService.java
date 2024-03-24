@@ -28,7 +28,7 @@ public class JooqTgChatService implements TgChatService {
     }
 
     @Transactional
-    public ChatDTO unregister(long tgChatId) {
+    public void unregister(long tgChatId) {
         var tgChat = jooqTgChatRepository.findChatById(tgChatId);
 
         if (tgChat == null) {
@@ -36,7 +36,5 @@ public class JooqTgChatService implements TgChatService {
         }
 
         jooqTgChatRepository.removeChat(tgChatId);
-
-        return tgChat;
     }
 }

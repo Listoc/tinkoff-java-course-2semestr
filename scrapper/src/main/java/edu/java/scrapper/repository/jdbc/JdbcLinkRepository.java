@@ -6,6 +6,7 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class JdbcLinkRepository {
     private final JdbcTemplate jdbcTemplate;
+    private final RowMapper<LinkDTO> rowMapper = getLinkRowMapper();
 
     public JdbcLinkRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -34,15 +36,15 @@ public class JdbcLinkRepository {
         jdbcTemplate.update(addMap, tgChatId, linkId);
     }
 
-    public LinkDTO findLinkByUrl(String url) {
+    public Optional<LinkDTO> findLinkByUrl(String url) {
         var findLink = "SELECT * FROM link WHERE url = ?;";
-        var linkList = jdbcTemplate.query(findLink, getLinkRowMapper(), url);
+        var linkList = jdbcTemplate.query(findLink, rowMapper, url);
 
         if (linkList.isEmpty()) {
-            return null;
+            return Optional.empty();
         }
 
-        return linkList.getFirst();
+        return Optional.of(linkList.getFirst());
     }
 
     public void removeLinkByUrl(String url) {
@@ -53,18 +55,18 @@ public class JdbcLinkRepository {
 
     public List<LinkDTO> findAll() {
         var findAllLinks = "SELECT * FROM link";
-        return jdbcTemplate.query(findAllLinks, getLinkRowMapper());
+        return jdbcTemplate.query(findAllLinks, rowMapper);
     }
 
     public List<LinkDTO> findAllByChatId(long tgChatId) {
         var findAllLinks =
             "SELECT * FROM link l JOIN chat_link_map clm ON l.link_id = clm.link_id WHERE clm.chat_id = ?;";
-        return jdbcTemplate.query(findAllLinks, getLinkRowMapper(), tgChatId);
+        return jdbcTemplate.query(findAllLinks, rowMapper, tgChatId);
     }
 
-    public List<LinkDTO> findAllBeforeDate(OffsetDateTime dateTime) {
+    public List<LinkDTO> findAllBeforeDateTime(OffsetDateTime dateTime) {
         var findAllLinks = "SELECT * FROM link WHERE last_check < ?;";
-        return jdbcTemplate.query(findAllLinks, getLinkRowMapper(), dateTime);
+        return jdbcTemplate.query(findAllLinks, rowMapper, dateTime);
     }
 
     public void updateLinkLastCheckDate(long linkId) {

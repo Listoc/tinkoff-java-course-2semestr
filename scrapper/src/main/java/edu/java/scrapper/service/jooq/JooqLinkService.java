@@ -6,6 +6,7 @@ import edu.java.scrapper.repository.jooq.JooqLinkRepository;
 import edu.java.scrapper.repository.jooq.JooqTgChatRepository;
 import edu.java.scrapper.service.LinkService;
 import java.net.URI;
+import java.time.OffsetDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +35,7 @@ public class JooqLinkService implements LinkService {
     }
 
     @Transactional
-    public LinkDTO remove(long tgChatId, URI url) {
+    public void remove(long tgChatId, URI url) {
         var stringUrl = url.toString();
         var link = jooqLinkRepository.findLinkByUrl(stringUrl);
 
@@ -44,7 +45,6 @@ public class JooqLinkService implements LinkService {
 
         jooqLinkRepository.removeChatLinkMapping(tgChatId, link.getLinkId());
         link.setTgChatList(jooqTgChatRepository.findAllByLinkId(link.getLinkId()));
-        return link;
     }
 
     @Transactional

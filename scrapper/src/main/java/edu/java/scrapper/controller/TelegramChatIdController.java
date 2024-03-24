@@ -23,7 +23,7 @@ public class TelegramChatIdController {
     }
 
     @DeleteMapping("/tg-chat/{id}")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteChat(@PathVariable Long id) {
         tgChatService.unregister(id);
     }
