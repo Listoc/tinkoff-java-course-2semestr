@@ -17,7 +17,7 @@ public class ControllerHandler {
     private final static String NOT_FOUND_STRING = "404";
 
     @ExceptionHandler(ChatAlreadyExistException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.CONFLICT)
     public ApiErrorResponse chatAlreadyExist(ChatAlreadyExistException e) {
         return new ApiErrorResponse("Chat already exist", BAD_REQUEST_STRING, e);
     }
@@ -47,7 +47,7 @@ public class ControllerHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ApiErrorResponse otherExceptions(Exception e) {
         return new ApiErrorResponse("Bad request", BAD_REQUEST_STRING, e);
     }

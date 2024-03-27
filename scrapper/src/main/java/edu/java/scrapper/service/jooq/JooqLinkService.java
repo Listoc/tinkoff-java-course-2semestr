@@ -9,10 +9,8 @@ import edu.java.scrapper.service.LinkService;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.List;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
 public class JooqLinkService implements LinkService {
     private final JooqLinkRepository jooqLinkRepository;
     private final JooqTgChatRepository jooqTgChatRepository;

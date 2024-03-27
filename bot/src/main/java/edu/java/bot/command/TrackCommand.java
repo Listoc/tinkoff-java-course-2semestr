@@ -3,20 +3,23 @@ package edu.java.bot.command;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.request.ParseMode;
 import com.pengrad.telegrambot.request.SendMessage;
-import edu.java.bot.model.User;
-import edu.java.bot.repository.Repository;
+import edu.java.bot.client.ScrapperClient;
 import jakarta.validation.constraints.NotNull;
+import java.net.URI;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 @Component
 public class TrackCommand extends AbstractCommand implements Command {
-    private final Repository repository;
+    private final ScrapperClient scrapperClient;
 
     @Autowired
-    public TrackCommand(@NotNull Repository repository) {
-        super("/track", "add new link to tracking");
-        this.repository = repository;
+    public TrackCommand(ScrapperClient scrapperClient) {
+        super("/track", "добавить новую ссылку в отслеживание");
+        this.scrapperClient = scrapperClient;
     }
 
     @Override
@@ -25,14 +28,19 @@ public class TrackCommand extends AbstractCommand implements Command {
         String text;
 
         if (split.length < 2) {
-            text = "You need to follow `/track` command by a link";
+            text = "После команды `/track` должа идти ссылка";
         } else {
-            var result = repository.addLinkToUser(new User(update.message().from().id()), split[1]);
-
-            if (result) {
-                text = "Now you track new link:\n" + '`' + split[1] + '`';
-            } else {
-                text = "You need to register first. Try `/start` command.";
+            try {
+                scrapperClient.addLink(update.message().chat().id(), URI.create(split[1]));
+                text = "Теперь вы отслеживаете новую ссылку:\n" + '`' + split[1] + '`';
+            } catch (WebClientResponseException e) {
+                if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                    text = "Сначала вам нужно зарегистрироваться. Попробуйте команду `/start`.";
+                } else {
+                    text = "Ошибка на сервере!";
+                }
+            } catch (WebClientRequestException e) {
+                text = "Сервер недоступен!";
             }
         }
 

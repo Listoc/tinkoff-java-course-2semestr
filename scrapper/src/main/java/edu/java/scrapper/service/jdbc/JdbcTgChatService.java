@@ -1,6 +1,7 @@
 package edu.java.scrapper.service.jdbc;
 
 import edu.java.scrapper.exception.CantAddToDBException;
+import edu.java.scrapper.exception.ChatAlreadyExistException;
 import edu.java.scrapper.model.ChatDTO;
 import edu.java.scrapper.repository.jdbc.JdbcTgChatRepository;
 import edu.java.scrapper.service.TgChatService;
@@ -21,6 +22,8 @@ public class JdbcTgChatService implements TgChatService {
         if (tgChat.isEmpty()) {
             jdbcTgChatRepository.addChat(tgChatId);
             tgChat = jdbcTgChatRepository.findChatById(tgChatId);
+        } else {
+            throw new ChatAlreadyExistException("Chat already exists!");
         }
 
         return tgChat.orElseThrow(() -> new CantAddToDBException("Cant add new chat to DB"));

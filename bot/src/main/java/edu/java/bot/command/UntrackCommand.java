@@ -3,20 +3,23 @@ package edu.java.bot.command;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.request.ParseMode;
 import com.pengrad.telegrambot.request.SendMessage;
-import edu.java.bot.model.User;
-import edu.java.bot.repository.Repository;
+import edu.java.bot.client.ScrapperClient;
 import jakarta.validation.constraints.NotNull;
+import java.net.URI;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 @Component
 public class UntrackCommand extends AbstractCommand implements Command {
-    private final Repository repository;
+    private final ScrapperClient scrapperClient;
 
     @Autowired
-    public UntrackCommand(@NotNull Repository repository) {
-        super("/untrack", "remove link from tracking");
-        this.repository = repository;
+    public UntrackCommand(ScrapperClient scrapperClient) {
+        super("/untrack", "удалить ссылку из отслеживания");
+        this.scrapperClient = scrapperClient;
     }
 
     @Override
@@ -25,14 +28,19 @@ public class UntrackCommand extends AbstractCommand implements Command {
         String text;
 
         if (split.length < 2) {
-            text = "You need to follow `/untrack` command by a link";
+            text = "После команды `/untrack` должа идти ссылка";
         } else {
-            var result = repository.deleteLinkByUser(new User(update.message().from().id()), split[1]);
-
-            if (result) {
-                text = "Now you don't track that link:\n" + '`' + split[1] + '`';
-            } else {
-                text = "You need to register first. Try `/start` command.";
+            try {
+                scrapperClient.removeLink(update.message().chat().id(), URI.create(split[1]));
+                text = "Вы больше не отслеживаете следующую ссылку:\n" + '`' + split[1] + '`';
+            } catch (WebClientResponseException e) {
+                if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                    text = "Сначала вам нужно зарегистрироваться. Попробуйте команду `/start`.";
+                } else {
+                    text = "Ошибка на сервере!";
+                }
+            } catch (WebClientRequestException e) {
+                text = "Сервер недоступен!";
             }
         }
 
