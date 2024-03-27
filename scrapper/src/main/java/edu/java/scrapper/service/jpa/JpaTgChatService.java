@@ -1,7 +1,7 @@
 package edu.java.scrapper.service.jpa;
 
 import edu.java.scrapper.exception.ChatAlreadyExistException;
-import edu.java.scrapper.model.TgChat;
+import edu.java.scrapper.model.ChatDTO;
 import edu.java.scrapper.repository.jpa.JpaChat;
 import edu.java.scrapper.repository.jpa.JpaLinkRepository;
 import edu.java.scrapper.repository.jpa.JpaTgChatRepository;
@@ -20,7 +20,7 @@ public class JpaTgChatService implements TgChatService {
     }
 
     @Transactional
-    public TgChat register(long tgChatId) {
+    public ChatDTO register(long tgChatId) {
         var optionalChat = jpaTgChatRepository.findById(tgChatId);
         JpaChat chat;
 
@@ -45,27 +45,27 @@ public class JpaTgChatService implements TgChatService {
     }
 
     @Transactional
-    public List<TgChat> getChats(long linkId) {
+    public List<ChatDTO> getChats(long linkId) {
         var link = jpaLinkRepository.findById(linkId);
 
         return link.map(jpaLink -> mapToDto(jpaLink.getChats())).orElse(null);
 
     }
 
-    public TgChat mapToDto(JpaChat jpaChat) {
-        var chat = new TgChat();
+    public ChatDTO mapToDto(JpaChat jpaChat) {
+        var chat = new ChatDTO();
 
         chat.setChatId(jpaChat.getChatId());
 
         return chat;
     }
 
-    public List<TgChat> mapToDto(List<JpaChat> jpaChats) {
-        var chats = new ArrayList<TgChat>();
-        TgChat chat;
+    public List<ChatDTO> mapToDto(List<JpaChat> jpaChats) {
+        var chats = new ArrayList<ChatDTO>();
+        ChatDTO chat;
 
         for (var jpaChat : jpaChats) {
-            chat = new TgChat();
+            chat = new ChatDTO();
 
             chat.setChatId(jpaChat.getChatId());
 

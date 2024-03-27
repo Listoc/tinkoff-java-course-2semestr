@@ -60,7 +60,7 @@ public class JpaLinkRepositoryTest extends IntegrationTest {
 
         assertThat(links.size()).isEqualTo(1);
         assertThat(links.getFirst().getUrl()).isEqualTo(URI.create("testlink"));
-        assertThat(links.getFirst().getLastCheckTime()).isBetween(OffsetDateTime.now().minusSeconds(5), OffsetDateTime.now().plusSeconds(5));
+        assertThat(links.getFirst().getLastCheck()).isBetween(OffsetDateTime.now().minusSeconds(5), OffsetDateTime.now().plusSeconds(5));
     }
 
     @Test

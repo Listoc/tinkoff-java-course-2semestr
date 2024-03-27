@@ -1,7 +1,7 @@
 package edu.java.scrapper.service.jpa;
 
 import edu.java.scrapper.exception.ChatNotExistException;
-import edu.java.scrapper.model.Link;
+import edu.java.scrapper.model.LinkDTO;
 import edu.java.scrapper.repository.jpa.JpaLink;
 import edu.java.scrapper.repository.jpa.JpaLinkRepository;
 import edu.java.scrapper.repository.jpa.JpaTgChatRepository;
@@ -24,7 +24,7 @@ public class JpaLinkService implements LinkService {
     }
 
     @Transactional
-    public Link add(long tgChatId, URI url) {
+    public LinkDTO add(long tgChatId, URI url) {
         var optionalJpaLink = jpaLinkRepository.findByUrl(url.toString());
         JpaLink jpaLink;
         var chat = jpaTgChatRepository.findById(tgChatId);
@@ -63,7 +63,7 @@ public class JpaLinkService implements LinkService {
     }
 
     @Transactional
-    public List<Link> getLinks(long tgChatId) {
+    public List<LinkDTO> getLinks(long tgChatId) {
         var chat = jpaTgChatRepository.findById(tgChatId);
 
         if (chat.isEmpty()) {
@@ -74,7 +74,7 @@ public class JpaLinkService implements LinkService {
     }
 
     @Transactional
-    public List<Link> getLinksBeforeDateTime(OffsetDateTime dateTime) {
+    public List<LinkDTO> getLinksBeforeDateTime(OffsetDateTime dateTime) {
         return mapToDto(jpaLinkRepository.findAllByLastCheckLessThan(dateTime));
     }
 
@@ -85,25 +85,25 @@ public class JpaLinkService implements LinkService {
         link.ifPresent(jpaLink -> jpaLink.setLastCheck(OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS)));
     }
 
-    private Link mapToDto(JpaLink jpaLink) {
-        var link = new Link();
+    private LinkDTO mapToDto(JpaLink jpaLink) {
+        var link = new LinkDTO();
 
         link.setLinkId(jpaLink.getLinkId());
         link.setUrl(URI.create(jpaLink.getUrl()));
-        link.setLastCheckTime(jpaLink.getLastCheck());
+        link.setLastCheck(jpaLink.getLastCheck());
 
         return link;
     }
 
-    private List<Link> mapToDto(List<JpaLink> jpaLinks) {
-        var links = new ArrayList<Link>();
-        Link link;
+    private List<LinkDTO> mapToDto(List<JpaLink> jpaLinks) {
+        var links = new ArrayList<LinkDTO>();
+        LinkDTO link;
         for (var jpaLink : jpaLinks) {
-            link = new Link();
+            link = new LinkDTO();
 
             link.setLinkId(jpaLink.getLinkId());
             link.setUrl(URI.create(jpaLink.getUrl()));
-            link.setLastCheckTime(jpaLink.getLastCheck());
+            link.setLastCheck(jpaLink.getLastCheck());
 
             links.add(link);
         }

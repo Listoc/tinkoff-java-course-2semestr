@@ -2,7 +2,7 @@ package edu.java.scrapper.service.jdbc;
 
 import edu.java.scrapper.exception.CantAddToDBException;
 import edu.java.scrapper.exception.ChatNotExistException;
-import edu.java.scrapper.model.Link;
+import edu.java.scrapper.model.LinkDTO;
 import edu.java.scrapper.repository.jdbc.JdbcLinkRepository;
 import edu.java.scrapper.repository.jdbc.JdbcTgChatRepository;
 import edu.java.scrapper.service.LinkService;
@@ -22,7 +22,7 @@ public class JdbcLinkService implements LinkService {
     }
 
     @Transactional
-    public Link add(long tgChatId, URI url) {
+    public LinkDTO add(long tgChatId, URI url) {
         var stringUrl = url.toString();
         var chat = jdbcTgChatRepository.findChatById(tgChatId);
 
@@ -60,7 +60,7 @@ public class JdbcLinkService implements LinkService {
     }
 
     @Transactional
-    public List<Link> getLinks(long tgChatId) {
+    public List<LinkDTO> getLinks(long tgChatId) {
         var chat = jdbcTgChatRepository.findChatById(tgChatId);
 
         if (chat.isEmpty()) {
@@ -71,7 +71,7 @@ public class JdbcLinkService implements LinkService {
     }
 
     @Transactional
-    public List<Link> getLinksBeforeDateTime(OffsetDateTime dateTime) {
+    public List<LinkDTO> getLinksBeforeDateTime(OffsetDateTime dateTime) {
         return jdbcLinkRepository.findAllBeforeDateTime(dateTime);
     }
 

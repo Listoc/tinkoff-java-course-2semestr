@@ -5,6 +5,6 @@ import lombok.Setter;
 
 @Data
 @Setter
-public class TgChat {
+public class ChatDTO {
     private long chatId;
 }

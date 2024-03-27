@@ -1,7 +1,7 @@
 package edu.java.scrapper.service.proccesor;
 
 import edu.java.scrapper.client.StackOverflowClient;
-import edu.java.scrapper.model.Link;
+import edu.java.scrapper.model.LinkDTO;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,11 +14,12 @@ public class StackOverFlowLinkUpdateProcessorService implements LinkUpdateProces
     }
 
     @Override
-    public String process(Link link) {
+    public String process(LinkDTO link) {
         var uri = link.getUrl();
         var host = uri.getHost();
         var split = uri.getPath().split("/");
         int questionId;
+        String message = "Появились изменения в вопросе.";
 
         if (host == null || !host.equals("stackoverflow.com") || split.length != PATH_LENGTH) {
             return null;
@@ -32,10 +33,32 @@ public class StackOverFlowLinkUpdateProcessorService implements LinkUpdateProces
 
         var response = stackOverflowClient.fetchQuestion(questionId);
 
-        if (response.lastUpdateDate().isAfter(link.getLastCheckTime())) {
-            return "Появились изменения в вопросе.";
+        if (response.lastUpdateDate().isAfter(link.getLastCheck())) {
+            message += checkAnswers(link, questionId);
+            return message;
         }
 
         return "";
+    }
+
+    private String checkAnswers(LinkDTO link, int id) {
+        var answers = stackOverflowClient.fetchAnswers(id)
+            .stream()
+            .filter((a) -> a.answerDate().isAfter(link.getLastCheck()))
+            .toList();
+
+        StringBuilder builder;
+
+        if (answers.isEmpty()) {
+            return "";
+        }
+
+        builder = new StringBuilder("\n\nНовые ответы:\n");
+
+        for (var answer : answers.reversed()) {
+            builder.append(answer.link()).append("\n");
+        }
+
+        return builder.toString();
     }
 }

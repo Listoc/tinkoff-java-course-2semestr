@@ -8,9 +8,9 @@ import lombok.Setter;
 
 @Data
 @Setter
-public class Link {
+public class LinkDTO {
     private long linkId;
     private URI url;
-    private OffsetDateTime lastCheckTime;
-    private List<TgChat> tgChatList;
+    private OffsetDateTime lastCheck;
+    private List<ChatDTO> tgChatList;
 }

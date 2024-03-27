@@ -2,7 +2,7 @@ package edu.java.scrapper.service.jdbc;
 
 import edu.java.scrapper.exception.CantAddToDBException;
 import edu.java.scrapper.exception.ChatAlreadyExistException;
-import edu.java.scrapper.model.TgChat;
+import edu.java.scrapper.model.ChatDTO;
 import edu.java.scrapper.repository.jdbc.JdbcTgChatRepository;
 import edu.java.scrapper.service.TgChatService;
 import java.util.List;
@@ -16,7 +16,7 @@ public class JdbcTgChatService implements TgChatService {
     }
 
     @Transactional
-    public TgChat register(long tgChatId) {
+    public ChatDTO register(long tgChatId) {
         var tgChat = jdbcTgChatRepository.findChatById(tgChatId);
 
         if (tgChat.isEmpty()) {
@@ -37,7 +37,7 @@ public class JdbcTgChatService implements TgChatService {
     }
 
     @Transactional
-    public List<TgChat> getChats(long linkId) {
+    public List<ChatDTO> getChats(long linkId) {
         return jdbcTgChatRepository.findAllByLinkId(linkId);
     }
 }
