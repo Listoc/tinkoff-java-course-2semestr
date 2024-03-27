@@ -1,7 +1,7 @@
 package edu.java.scrapper.service.proccesor;
 
-import edu.java.scrapper.model.Link;
+import edu.java.scrapper.model.LinkDTO;
 
 public interface LinkUpdateProcessorService {
-    String process(Link link);
+    String process(LinkDTO link);
 }

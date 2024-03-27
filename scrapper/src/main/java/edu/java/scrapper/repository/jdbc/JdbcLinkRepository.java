@@ -1,6 +1,6 @@
 package edu.java.scrapper.repository.jdbc;
 
-import edu.java.scrapper.model.Link;
+import edu.java.scrapper.model.LinkDTO;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class JdbcLinkRepository {
     private final JdbcTemplate jdbcTemplate;
-    private final RowMapper<Link> rowMapper = getLinkRowMapper();
+    private final RowMapper<LinkDTO> rowMapper = getLinkRowMapper();
 
     public JdbcLinkRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -36,7 +36,7 @@ public class JdbcLinkRepository {
         jdbcTemplate.update(addMap, tgChatId, linkId);
     }
 
-    public Optional<Link> findLinkByUrl(String url) {
+    public Optional<LinkDTO> findLinkByUrl(String url) {
         var findLink = "SELECT * FROM link WHERE url = ?;";
         var linkList = jdbcTemplate.query(findLink, rowMapper, url);
 
@@ -53,18 +53,18 @@ public class JdbcLinkRepository {
         jdbcTemplate.update(removeLink, url);
     }
 
-    public List<Link> findAll() {
+    public List<LinkDTO> findAll() {
         var findAllLinks = "SELECT * FROM link";
         return jdbcTemplate.query(findAllLinks, rowMapper);
     }
 
-    public List<Link> findAllByChatId(long tgChatId) {
+    public List<LinkDTO> findAllByChatId(long tgChatId) {
         var findAllLinks =
             "SELECT * FROM link l JOIN chat_link_map clm ON l.link_id = clm.link_id WHERE clm.chat_id = ?;";
         return jdbcTemplate.query(findAllLinks, rowMapper, tgChatId);
     }
 
-    public List<Link> findAllBeforeDateTime(OffsetDateTime dateTime) {
+    public List<LinkDTO> findAllBeforeDateTime(OffsetDateTime dateTime) {
         var findAllLinks = "SELECT * FROM link WHERE last_check < ?;";
         return jdbcTemplate.query(findAllLinks, rowMapper, dateTime);
     }
@@ -75,13 +75,13 @@ public class JdbcLinkRepository {
         jdbcTemplate.update(removeLink, OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS), linkId);
     }
 
-    public static RowMapper<Link> getLinkRowMapper() {
+    public static RowMapper<LinkDTO> getLinkRowMapper() {
         return (r, i) -> {
-            var link = new Link();
+            var link = new LinkDTO();
             var formatter = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ssX");
             link.setLinkId(r.getLong("link_id"));
             link.setUrl(URI.create(r.getString("url")));
-            link.setLastCheckTime(OffsetDateTime.parse(r.getString("last_check"), formatter));
+            link.setLastCheck(OffsetDateTime.parse(r.getString("last_check"), formatter));
             return link;
         };
     }

@@ -2,7 +2,7 @@ package edu.java.scrapper.service;
 
 import edu.java.scrapper.client.BotClient;
 import edu.java.scrapper.configuration.UpdaterProperties;
-import edu.java.scrapper.model.TgChat;
+import edu.java.scrapper.model.ChatDTO;
 import edu.java.scrapper.service.proccesor.LinkUpdateProcessorService;
 import edu.java.shared.model.LinkUpdateRequest;
 import java.time.OffsetDateTime;
@@ -51,7 +51,7 @@ public class LinkUpdaterImpl implements LinkUpdater {
                         link.getLinkId(),
                         link.getUrl(),
                         message,
-                        tgChatService.getChats(link.getLinkId()).stream().map(TgChat::getChatId).toList()
+                        tgChatService.getChats(link.getLinkId()).stream().map(ChatDTO::getChatId).toList()
                     )
                 );
             }
