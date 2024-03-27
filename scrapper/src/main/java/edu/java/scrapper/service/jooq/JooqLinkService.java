@@ -1,6 +1,7 @@
 package edu.java.scrapper.service.jooq;
 
-import edu.java.scrapper.exception.LinkNotExistException;
+import edu.java.scrapper.exception.CantAddToDBException;
+import edu.java.scrapper.exception.ChatNotExistException;
 import edu.java.scrapper.model.LinkDTO;
 import edu.java.scrapper.repository.jooq.JooqLinkRepository;
 import edu.java.scrapper.repository.jooq.JooqTgChatRepository;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class JooqLinkService implements LinkService {
     private final JooqLinkRepository jooqLinkRepository;
     private final JooqTgChatRepository jooqTgChatRepository;
+    private final static String CHAT_IS_NOT_REGISTERED_MESSAGE = "Chat is not registered";
 
     public JooqLinkService(JooqLinkRepository jooqLinkRepository, JooqTgChatRepository jooqTgChatRepository) {
         this.jooqLinkRepository = jooqLinkRepository;
@@ -24,31 +26,59 @@ public class JooqLinkService implements LinkService {
     @Transactional
     public LinkDTO add(long tgChatId, URI url) {
         var stringUrl = url.toString();
+        var chat = jooqTgChatRepository.findChatById(tgChatId);
+
+        if (chat.isEmpty()) {
+            throw new ChatNotExistException(CHAT_IS_NOT_REGISTERED_MESSAGE);
+        }
+
         var link = jooqLinkRepository.findLinkByUrl(stringUrl);
-        if (link == null) {
+
+        if (link.isEmpty()) {
             jooqLinkRepository.addLink(stringUrl);
             link = jooqLinkRepository.findLinkByUrl(stringUrl);
         }
-        jooqLinkRepository.addChatLinkMapping(tgChatId, link.getLinkId());
-        link.setTgChatList(jooqTgChatRepository.findAllByLinkId(link.getLinkId()));
-        return link;
+
+        var linkValue = link.orElseThrow(() -> new CantAddToDBException("Cant add link to DB"));
+
+        jooqLinkRepository.addChatLinkMapping(tgChatId, linkValue.getLinkId());
+        linkValue.setTgChatList(jooqTgChatRepository.findAllByLinkId(linkValue.getLinkId()));
+
+        return linkValue;
     }
 
     @Transactional
     public void remove(long tgChatId, URI url) {
         var stringUrl = url.toString();
-        var link = jooqLinkRepository.findLinkByUrl(stringUrl);
+        var chat = jooqTgChatRepository.findChatById(tgChatId);
 
-        if (link == null) {
-            throw new LinkNotExistException("No such link in DB");
+        if (chat.isEmpty()) {
+            throw new ChatNotExistException(CHAT_IS_NOT_REGISTERED_MESSAGE);
         }
 
-        jooqLinkRepository.removeChatLinkMapping(tgChatId, link.getLinkId());
-        link.setTgChatList(jooqTgChatRepository.findAllByLinkId(link.getLinkId()));
+        var link = jooqLinkRepository.findLinkByUrl(stringUrl);
+
+        link.ifPresent(value -> jooqLinkRepository.removeChatLinkMapping(tgChatId, value.getLinkId()));
     }
 
     @Transactional
     public List<LinkDTO> getLinks(long tgChatId) {
+        var chat = jooqTgChatRepository.findChatById(tgChatId);
+
+        if (chat.isEmpty()) {
+            throw new ChatNotExistException(CHAT_IS_NOT_REGISTERED_MESSAGE);
+        }
+
         return jooqLinkRepository.findAllByChatId(tgChatId);
+    }
+
+    @Override
+    public List<LinkDTO> getLinksBeforeDateTime(OffsetDateTime dateTime) {
+        return jooqLinkRepository.findAllBeforeDateTime(dateTime);
+    }
+
+    @Override
+    public void updateLastCheckTime(long linkId) {
+        jooqLinkRepository.updateLinkLastCheckDate(linkId);
     }
 }

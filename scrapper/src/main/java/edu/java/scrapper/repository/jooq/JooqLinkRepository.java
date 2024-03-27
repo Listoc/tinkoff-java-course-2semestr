@@ -6,6 +6,7 @@ import edu.java.scrapper.repository.jooq.generated.tables.Link;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
@@ -43,17 +44,17 @@ public class JooqLinkRepository {
             .execute();
     }
 
-    public LinkDTO findLinkByUrl(String url) {
+    public Optional<LinkDTO> findLinkByUrl(String url) {
         var links = dsl.select()
             .from(link)
             .where(link.URL.eq(url))
             .fetch();
 
         if (links.isEmpty()) {
-            return null;
+            return Optional.empty();
         }
 
-        return links.getFirst().into(new LinkDTO());
+        return Optional.of(links.getFirst().into(new LinkDTO()));
     }
 
     public void removeLinkByUrl(String url) {
@@ -80,7 +81,7 @@ public class JooqLinkRepository {
         return links.into(LinkDTO.class);
     }
 
-    public List<LinkDTO> findAllBeforeDate(OffsetDateTime dateTime) {
+    public List<LinkDTO> findAllBeforeDateTime(OffsetDateTime dateTime) {
         var links = dsl.select()
             .from(link)
             .where(link.LAST_CHECK.lt(dateTime))

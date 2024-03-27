@@ -1,8 +1,8 @@
 package edu.java.scrapper.service.jdbc;
 
-import edu.java.scrapper.model.LinkDTO;
 import edu.java.scrapper.exception.CantAddToDBException;
 import edu.java.scrapper.exception.ChatNotExistException;
+import edu.java.scrapper.model.LinkDTO;
 import edu.java.scrapper.repository.jdbc.JdbcLinkRepository;
 import edu.java.scrapper.repository.jdbc.JdbcTgChatRepository;
 import edu.java.scrapper.service.LinkService;

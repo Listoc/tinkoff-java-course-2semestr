@@ -3,8 +3,6 @@ package edu.java.scrapper.jooq;
 import edu.java.scrapper.IntegrationTest;
 import edu.java.scrapper.repository.jdbc.JdbcLinkRepository;
 import java.net.URI;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.time.OffsetDateTime;
 import java.util.List;
 import edu.java.scrapper.repository.jdbc.JdbcTgChatRepository;
@@ -14,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -65,7 +62,7 @@ public class JooqLinkRepositoryTest extends IntegrationTest {
     public void updateDateTest() throws InterruptedException {
         jooqLinkRepository.addLink("testlink");
 
-        var link = jooqLinkRepository.findLinkByUrl("testlink");
+        var link = jooqLinkRepository.findLinkByUrl("testlink").get();
         System.out.println(link);
         var date = link.getLastCheck();
 
@@ -73,7 +70,7 @@ public class JooqLinkRepositoryTest extends IntegrationTest {
 
         jooqLinkRepository.updateLinkLastCheckDate(link.getLinkId());
 
-        link = jooqLinkRepository.findLinkByUrl("testlink");
+        link = jooqLinkRepository.findLinkByUrl("testlink").get();
         System.out.println(link);
         var date2 = link.getLastCheck();
 
@@ -105,7 +102,7 @@ public class JooqLinkRepositoryTest extends IntegrationTest {
     public void findLinkTest() {
         jooqLinkRepository.addLink("testlink");
 
-        var link = jooqLinkRepository.findLinkByUrl("testlink");
+        var link = jooqLinkRepository.findLinkByUrl("testlink").get();
 
         assertThat(link.getUrl()).isEqualTo(URI.create("testlink"));
         assertThat(link.getLastCheck()).isBetween(OffsetDateTime.now().minusSeconds(2), OffsetDateTime.now().plusSeconds(2));
@@ -117,7 +114,7 @@ public class JooqLinkRepositoryTest extends IntegrationTest {
     public void addChatLinkMappingTest() {
         jooqLinkRepository.addLink("testlink");
 
-        var link = jooqLinkRepository.findLinkByUrl("testlink");
+        var link = jooqLinkRepository.findLinkByUrl("testlink").get();
 
         jooqLinkRepository.addChatLinkMapping(5, link.getLinkId());
 
@@ -134,29 +131,19 @@ public class JooqLinkRepositoryTest extends IntegrationTest {
     public void removeChatLinkMappingTest() {
         jooqLinkRepository.addLink("testlink");
 
-        var link = jooqLinkRepository.findLinkByUrl("testlink");
+        var link = jooqLinkRepository.findLinkByUrl("testlink").get();
 
         jooqLinkRepository.addChatLinkMapping(5, link.getLinkId());
 
         var getMappingsCount = "SELECT count(*) FROM chat_link_map;";
 
-        var count = jdbcTemplate.query(getMappingsCount, new RowMapper<Integer>() {
-            @Override
-            public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
-                return rs.getInt(1);
-            }
-        });
+        var count = jdbcTemplate.query(getMappingsCount, (rs, rowNum) -> rs.getInt(1));
 
         assertThat(count.getFirst()).isEqualTo(1);
 
         jooqLinkRepository.removeChatLinkMapping(5, link.getLinkId());
 
-        count = jdbcTemplate.query(getMappingsCount, new RowMapper<Integer>() {
-            @Override
-            public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
-                return rs.getInt(1);
-            }
-        });
+        count = jdbcTemplate.query(getMappingsCount, (rs, rowNum) -> rs.getInt(1));
 
         assertThat(count.getFirst()).isEqualTo(0);
     }
@@ -185,8 +172,8 @@ public class JooqLinkRepositoryTest extends IntegrationTest {
         jooqLinkRepository.addLink("anotherlink");
         jooqLinkRepository.addLink("finallink");
 
-        var link1 = jooqLinkRepository.findLinkByUrl("testlink");
-        var link2 = jooqLinkRepository.findLinkByUrl("anotherlink");
+        var link1 = jooqLinkRepository.findLinkByUrl("testlink").get();
+        var link2 = jooqLinkRepository.findLinkByUrl("anotherlink").get();
 
         jooqLinkRepository.addChatLinkMapping(5, link1.getLinkId());
         jooqLinkRepository.addChatLinkMapping(5, link2.getLinkId());

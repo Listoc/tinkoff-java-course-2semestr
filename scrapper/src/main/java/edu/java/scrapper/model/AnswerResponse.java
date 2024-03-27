@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.OffsetDateTime;
 
 public record AnswerResponse(
-    @JsonProperty("title")
-    String title,
+    @JsonProperty("link")
+    String link,
     @JsonProperty("creation_date")
     OffsetDateTime answerDate
 ) {

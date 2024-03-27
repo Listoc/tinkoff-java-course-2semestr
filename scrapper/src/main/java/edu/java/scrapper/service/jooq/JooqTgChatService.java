@@ -1,9 +1,10 @@
 package edu.java.scrapper.service.jooq;
 
-import edu.java.scrapper.exception.ChatNotExistException;
+import edu.java.scrapper.exception.CantAddToDBException;
 import edu.java.scrapper.model.ChatDTO;
 import edu.java.scrapper.repository.jooq.JooqTgChatRepository;
 import edu.java.scrapper.service.TgChatService;
+import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,22 +20,23 @@ public class JooqTgChatService implements TgChatService {
     public ChatDTO register(long tgChatId) {
         var tgChat = jooqTgChatRepository.findChatById(tgChatId);
 
-        if (tgChat == null) {
+        if (tgChat.isEmpty()) {
             jooqTgChatRepository.addChat(tgChatId);
             tgChat = jooqTgChatRepository.findChatById(tgChatId);
         }
 
-        return tgChat;
+        return tgChat.orElseThrow(() -> new CantAddToDBException("Cant add new chat to DB"));
     }
 
     @Transactional
     public void unregister(long tgChatId) {
         var tgChat = jooqTgChatRepository.findChatById(tgChatId);
 
-        if (tgChat == null) {
-            throw new ChatNotExistException("No such chat in DB");
-        }
+        tgChat.ifPresent(value -> jooqTgChatRepository.removeChat(value.getChatId()));
+    }
 
-        jooqTgChatRepository.removeChat(tgChatId);
+    @Override
+    public List<ChatDTO> getChats(long linkId) {
+        return jooqTgChatRepository.findAllByLinkId(linkId);
     }
 }

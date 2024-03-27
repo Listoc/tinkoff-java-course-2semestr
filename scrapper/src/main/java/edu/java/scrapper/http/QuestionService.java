@@ -9,6 +9,6 @@ public interface QuestionService {
     @GetExchange("/questions/{id}?site=stackoverflow")
     QuestionList getQuestion(@PathVariable int id);
 
-    @GetExchange("/questions/{id}/answers?site=stackoverflow")
+    @GetExchange("/questions/{id}/answers?site=stackoverflow&filter=!nNPvSNXCix")
     AnswerList getAnswers(@PathVariable int id);
 }

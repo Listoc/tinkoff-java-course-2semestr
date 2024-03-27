@@ -4,6 +4,7 @@ import edu.java.scrapper.model.ChatDTO;
 import edu.java.scrapper.repository.jooq.generated.tables.Chat;
 import edu.java.scrapper.repository.jooq.generated.tables.ChatLinkMap;
 import java.util.List;
+import java.util.Optional;
 import org.jooq.DSLContext;
 import org.springframework.stereotype.Repository;
 
@@ -29,17 +30,17 @@ public class JooqTgChatRepository {
         dsl.delete(chat).where(chat.CHAT_ID.eq(tgChatId)).execute();
     }
 
-    public ChatDTO findChatById(long tgChatId) {
+    public Optional<ChatDTO> findChatById(long tgChatId) {
         var chats = dsl.select()
                 .from(chat)
                 .where(chat.CHAT_ID.eq(tgChatId))
                 .fetch();
 
         if (chats.isEmpty()) {
-            return null;
+            return Optional.empty();
         }
 
-        return chats.getFirst().into(new ChatDTO());
+        return Optional.of(chats.getFirst().into(new ChatDTO()));
     }
 
     public List<ChatDTO> findAllByLinkId(long linkId) {

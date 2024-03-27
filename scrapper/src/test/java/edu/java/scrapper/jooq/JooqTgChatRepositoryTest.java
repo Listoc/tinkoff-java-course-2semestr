@@ -1,7 +1,6 @@
 package edu.java.scrapper.jooq;
 
 import edu.java.scrapper.IntegrationTest;
-import edu.java.scrapper.repository.jdbc.JdbcLinkRepository;
 import edu.java.scrapper.repository.jdbc.JdbcTgChatRepository;
 import edu.java.scrapper.repository.jooq.JooqLinkRepository;
 import edu.java.scrapper.repository.jooq.JooqTgChatRepository;
@@ -77,7 +76,7 @@ public class JooqTgChatRepositoryTest extends IntegrationTest {
     public void findChatTest() {
         jooqTgChatRepository.addChat(5);
 
-        var chat = jooqTgChatRepository.findChatById(5);
+        var chat = jooqTgChatRepository.findChatById(5).get();
 
         assertThat(chat.getChatId()).isEqualTo(5);
     }
@@ -108,7 +107,7 @@ public class JooqTgChatRepositoryTest extends IntegrationTest {
 
         jooqLinkRepository.addLink("testlink");
 
-        var link = jooqLinkRepository.findLinkByUrl("testlink");
+        var link = jooqLinkRepository.findLinkByUrl("testlink").get();
 
         jooqLinkRepository.addChatLinkMapping(5, link.getLinkId());
         jooqLinkRepository.addChatLinkMapping(6, link.getLinkId());

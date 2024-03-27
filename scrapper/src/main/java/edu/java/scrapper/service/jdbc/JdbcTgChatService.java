@@ -1,14 +1,10 @@
 package edu.java.scrapper.service.jdbc;
 
-import edu.java.scrapper.exception.ChatNotExistException;
+import edu.java.scrapper.exception.CantAddToDBException;
 import edu.java.scrapper.model.ChatDTO;
 import edu.java.scrapper.repository.jdbc.JdbcTgChatRepository;
 import edu.java.scrapper.service.TgChatService;
-import edu.java.scrapper.exception.CantAddToDBException;
-import edu.java.scrapper.repository.jdbc.JdbcTgChatRepository;
-import edu.java.scrapper.service.TgChatService;
 import java.util.List;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 public class JdbcTgChatService implements TgChatService {
