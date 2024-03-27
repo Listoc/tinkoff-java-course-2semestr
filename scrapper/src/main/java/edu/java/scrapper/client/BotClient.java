@@ -18,7 +18,7 @@ public class BotClient {
         this.service = factory.createClient(BotService.class);
     }
 
-    ResponseEntity<?> sendUpdates(LinkUpdateRequest linkUpdateRequest) {
+    public ResponseEntity<?> sendUpdates(LinkUpdateRequest linkUpdateRequest) {
         return service.sendUpdates(linkUpdateRequest);
     }
 
