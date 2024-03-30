@@ -3,6 +3,7 @@ app:
     interval: 20s
   updater:
     interval: 2m
+  database-access-type: jpa
   url:
     git: https://api.github.com
     stackoverflow: https://api.stackexchange.com/2.3

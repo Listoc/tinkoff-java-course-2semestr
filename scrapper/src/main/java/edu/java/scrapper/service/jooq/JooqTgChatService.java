@@ -5,10 +5,8 @@ import edu.java.scrapper.model.ChatDTO;
 import edu.java.scrapper.repository.jooq.JooqTgChatRepository;
 import edu.java.scrapper.service.TgChatService;
 import java.util.List;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
 public class JooqTgChatService implements TgChatService {
     private final JooqTgChatRepository jooqTgChatRepository;
 
