@@ -1,7 +1,11 @@
 app:
   telegram-token: ${TELEGRAM_TOKEN}
-  url:
-    scrapper: http://localhost:8080
+  client:
+    scrapper:
+      url: http://localhost:8080
+      codes: [404]
+      backoff-type: exponential
+      duration: 2s
 
 spring:
   application:

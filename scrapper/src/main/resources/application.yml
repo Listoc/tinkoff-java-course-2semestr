@@ -4,10 +4,18 @@ app:
   updater:
     interval: 2m
   database-access-type: jpa
-  url:
-    git: https://api.github.com
-    stackoverflow: https://api.stackexchange.com/2.3
-    bot: http://localhost:8090
+  client:
+    git:
+      url: https://api.github.com
+      codes: [500]
+    stackoverflow:
+      url: https://api.stackexchange.com/2.3
+      codes: [404, 505]
+      backoff-type: linear
+    bot:
+      url: http://localhost:8090
+      backoff-type: constant
+      duration: 3s
 
 spring:
   application:
