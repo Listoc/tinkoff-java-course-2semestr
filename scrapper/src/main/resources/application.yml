@@ -26,6 +26,33 @@ spring:
     url: jdbc:postgresql://localhost:5432/scrapper
     username: postgres
     password: postgres
+  cache:
+    cache-names:
+    - scrapper-buckets
+    caffeine:
+      spec: maximumSize=100000,expireAfterAccess=3600s
+
+bucket4j:
+  enabled: true
+  filters:
+  - cache-name: scrapper-buckets
+    url: /tg-chat/.*
+    rate-limits:
+    - cache-key: getRemoteAddr()
+      bandwidths:
+      - capacity: 20
+        time: 1
+        unit: minutes
+  - cache-name: scrapper-buckets
+    url: /links
+    rate-limits:
+    - cache-key: getRemoteAddr()
+      bandwidths:
+      - capacity: 20
+        time: 1
+        unit: minutes
+
+
 server:
   port: 8080
 

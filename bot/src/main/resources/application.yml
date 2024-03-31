@@ -12,6 +12,24 @@ spring:
     name: bot
   jackson:
     time-zone: UTC
+  cache:
+    cache-names:
+      - bot-buckets
+    caffeine:
+      spec: maximumSize=100000,expireAfterAccess=3600s
+
+bucket4j:
+  enabled: true
+  filters:
+  - cache-name: bot-buckets
+    url: /updates
+    rate-limits:
+    - cache-key: getRemoteAddr()
+      bandwidths:
+      - capacity: 20
+        time: 1
+        unit: minutes
+
 
 server:
   port: 8090
