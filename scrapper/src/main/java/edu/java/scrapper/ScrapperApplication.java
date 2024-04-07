@@ -7,8 +7,10 @@ import edu.java.scrapper.configuration.UpdaterProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cache.annotation.EnableCaching;
 
 @SpringBootApplication
+@EnableCaching
 @EnableConfigurationProperties({
     ApplicationConfig.class,
     ClientProperties.class,

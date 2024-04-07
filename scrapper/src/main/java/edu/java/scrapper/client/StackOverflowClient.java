@@ -3,6 +3,8 @@ package edu.java.scrapper.client;
 import edu.java.scrapper.http.QuestionService;
 import edu.java.scrapper.model.AnswerResponse;
 import edu.java.scrapper.model.QuestionResponse;
+import edu.java.shared.client.ClientInfo;
+import edu.java.shared.client.ClientUtils;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -14,6 +16,24 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 public class StackOverflowClient {
     private final QuestionService service;
     private static final String NO_SUCH_QUESTION = "No such question id on Stack Overflow";
+
+    public StackOverflowClient(@NotNull ClientInfo clientInfo) {
+        var webClient = WebClient
+            .builder()
+            .filter(
+                ClientUtils.getFilterWithRetry(
+                    clientInfo.codes(),
+                    clientInfo.backOffType(),
+                    clientInfo.maxAttempts(),
+                    clientInfo.duration()
+                )
+            )
+            .baseUrl(clientInfo.url())
+            .build();
+        var factory = HttpServiceProxyFactory.builderFor(WebClientAdapter.create(webClient)).build();
+
+        this.service = factory.createClient(QuestionService.class);
+    }
 
     public StackOverflowClient(@NotNull String baseUrl) {
         var webClient = WebClient.builder().baseUrl(baseUrl).build();
