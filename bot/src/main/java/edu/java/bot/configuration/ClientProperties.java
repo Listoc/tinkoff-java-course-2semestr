@@ -1,11 +1,12 @@
 package edu.java.bot.configuration;
 
+import edu.java.shared.client.ClientInfo;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "app.url")
+@ConfigurationProperties(prefix = "app.client")
 public record ClientProperties(
     @NotNull
-    String scrapper
+    ClientInfo scrapper
 ) {
 }
