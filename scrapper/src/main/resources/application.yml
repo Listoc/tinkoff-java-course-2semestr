@@ -8,6 +8,12 @@ app:
     git: https://api.github.com
     stackoverflow: https://api.stackexchange.com/2.3
     bot: http://localhost:8090
+  kafka:
+    updates-topic:
+      name: updates
+      partitions: 1
+      replicas: 1
+  use-queue: true
 
 spring:
   application:

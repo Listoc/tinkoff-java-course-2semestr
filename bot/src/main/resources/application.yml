@@ -2,6 +2,15 @@ app:
   telegram-token: ${TELEGRAM_TOKEN}
   url:
     scrapper: http://localhost:8080
+  kafka:
+    updates-topic:
+      name: updates
+      partitions: 1
+      replicas: 1
+    dlq-topic:
+      name: dlq
+      partitions: 1
+      replicas: 1
 
 spring:
   application:
