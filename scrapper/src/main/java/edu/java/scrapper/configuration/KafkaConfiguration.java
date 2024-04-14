@@ -1,11 +1,14 @@
 package edu.java.scrapper.configuration;
 
+import edu.java.scrapper.service.ScrapperQueueProducer;
+import edu.java.scrapper.service.proccesor.UpdatesSender;
 import edu.java.shared.model.LinkUpdateRequest;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.TopicBuilder;
@@ -48,5 +51,11 @@ public class KafkaConfiguration {
     @Bean
     public KafkaTemplate<String, LinkUpdateRequest> userKafkaTemplate() {
         return new KafkaTemplate<>(userProducerFactory());
+    }
+
+    @Bean
+    @ConditionalOnProperty(prefix = "app", name = "use-queue", havingValue = "true")
+    public UpdatesSender kafkaSender(KafkaTemplate<String, LinkUpdateRequest> kafkaTemplate) {
+        return new ScrapperQueueProducer(kafkaTemplate, kafkaProperties);
     }
 }
