@@ -1,8 +1,6 @@
 package edu.java.bot.controller;
 
-import com.pengrad.telegrambot.model.request.ParseMode;
-import com.pengrad.telegrambot.request.SendMessage;
-import edu.java.bot.telegram.Bot;
+import edu.java.bot.service.UpdatesHandler;
 import edu.java.shared.model.LinkUpdateRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -13,20 +11,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class UpdatesController {
-    private final Bot bot;
+    private final UpdatesHandler updatesHandler;
 
-    public UpdatesController(Bot bot) {
-        this.bot = bot;
+    public UpdatesController(UpdatesHandler updatesHandler) {
+        this.updatesHandler = updatesHandler;
     }
 
     @PostMapping("/updates")
     @ResponseStatus(HttpStatus.OK)
     public void getUpdates(@Valid @RequestBody LinkUpdateRequest linkUpdateRequest) {
-        var chatIds = linkUpdateRequest.tgChatIds();
-        var message = linkUpdateRequest.description() + "\n" + linkUpdateRequest.url();
-
-        for (var chatId : chatIds) {
-            bot.execute(new SendMessage(chatId, message).parseMode(ParseMode.Markdown));
-        }
+        updatesHandler.handle(linkUpdateRequest);
     }
 }

@@ -1,9 +1,9 @@
 package edu.java.scrapper.service;
 
-import edu.java.scrapper.client.BotClient;
 import edu.java.scrapper.configuration.UpdaterProperties;
 import edu.java.scrapper.model.ChatDTO;
 import edu.java.scrapper.service.proccesor.LinkUpdateProcessorService;
+import edu.java.scrapper.service.proccesor.UpdatesSender;
 import edu.java.shared.model.LinkUpdateRequest;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -15,20 +15,20 @@ public class LinkUpdaterImpl implements LinkUpdater {
     private final TgChatService tgChatService;
     private final List<LinkUpdateProcessorService> linkUpdateProcessorServiceList;
     private final UpdaterProperties updaterProperties;
-    private final BotClient botClient;
+    private final UpdatesSender updatesSender;
 
     public LinkUpdaterImpl(
         LinkService linkService,
         TgChatService tgChatService,
         List<LinkUpdateProcessorService> linkUpdateProcessorServiceList,
         UpdaterProperties updaterProperties,
-        BotClient botClient
+        UpdatesSender updatesSender
     ) {
         this.linkService = linkService;
         this.tgChatService = tgChatService;
         this.linkUpdateProcessorServiceList = linkUpdateProcessorServiceList;
         this.updaterProperties = updaterProperties;
-        this.botClient = botClient;
+        this.updatesSender = updatesSender;
     }
 
     public void update() {
@@ -46,7 +46,7 @@ public class LinkUpdaterImpl implements LinkUpdater {
             }
 
             if (message != null && !message.isEmpty()) {
-                botClient.sendUpdates(
+                updatesSender.send(
                     new LinkUpdateRequest(
                         link.getLinkId(),
                         link.getUrl(),

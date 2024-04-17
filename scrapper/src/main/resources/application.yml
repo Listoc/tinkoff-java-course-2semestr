@@ -4,6 +4,12 @@ app:
   updater:
     interval: 2m
   database-access-type: jpa
+  kafka:
+    updates-topic:
+      name: updates
+      partitions: 1
+      replicas: 1
+  use-queue: true
   client:
     git:
       url: https://api.github.com
