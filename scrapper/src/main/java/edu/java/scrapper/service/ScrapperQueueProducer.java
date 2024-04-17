@@ -1,12 +1,11 @@
 package edu.java.scrapper.service;
 
 import edu.java.scrapper.configuration.KafkaProperties;
+import edu.java.scrapper.service.proccesor.UpdatesSender;
 import edu.java.shared.model.LinkUpdateRequest;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.stereotype.Service;
 
-@Service
-public class ScrapperQueueProducer {
+public class ScrapperQueueProducer implements UpdatesSender {
     private final KafkaTemplate<String, LinkUpdateRequest> kafkaTemplate;
     private final KafkaProperties kafkaProperties;
 

@@ -1,16 +1,16 @@
 package edu.java.scrapper.client;
 
 import edu.java.scrapper.http.BotService;
+import edu.java.scrapper.service.proccesor.UpdatesSender;
 import edu.java.shared.client.ClientInfo;
 import edu.java.shared.client.ClientUtils;
 import edu.java.shared.model.LinkUpdateRequest;
 import jakarta.validation.constraints.NotNull;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.support.WebClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
-public class BotClient {
+public class BotClient implements UpdatesSender {
     private final BotService service;
 
     public BotClient(@NotNull ClientInfo clientInfo) {
@@ -31,8 +31,8 @@ public class BotClient {
         this.service = factory.createClient(BotService.class);
     }
 
-    public ResponseEntity<?> sendUpdates(LinkUpdateRequest linkUpdateRequest) {
-        return service.sendUpdates(linkUpdateRequest);
+    public void send(LinkUpdateRequest linkUpdateRequest) {
+        service.sendUpdates(linkUpdateRequest);
     }
 
 }
